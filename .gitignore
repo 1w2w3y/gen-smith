@@ -14,8 +14,8 @@ build/
 *.tsbuildinfo
 next-env.d.ts
 
-# debug
-npm-debug.log*
+# debug / logs
+*.log
 
 # env files
 .env
@@ -23,6 +23,12 @@ npm-debug.log*
 
 # config with secrets
 config.json
+
+# test coverage
+coverage/
+
+# turbopack cache
+.turbo/
 
 # generated images
 generated-images/
