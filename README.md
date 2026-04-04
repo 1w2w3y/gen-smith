@@ -2,8 +2,6 @@
 
 A lightweight playground for generative AI models — connect to Azure AI Foundry and experiment with image generation and text-to-speech through an intuitive web UI.
 
-![Home Page](docs/screenshots/home.png)
-
 ## Features
 
 - **GPT Image playground** — Generate images with gpt-image-1.5, gpt-image-1, and gpt-image-1-mini with full parameter control (size, quality, background, format, moderation)
@@ -22,6 +20,10 @@ A lightweight playground for generative AI models — connect to Azure AI Foundr
 ### GPT Image Playground
 
 ![GPT Image Playground](docs/screenshots/gpt-image.png)
+
+### FLUX Image Playground
+
+![FLUX Image Playground](docs/screenshots/flux-image.png)
 
 ### Text to Speech Playground
 
