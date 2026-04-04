@@ -1,27 +1,26 @@
 # gen-smith
 
-A lightweight playground for generative AI models — connect to Azure AI Foundry and experiment with image generation and audio synthesis through an intuitive web UI.
+A lightweight playground for generative AI models — connect to Azure AI Foundry and experiment with image generation and text-to-speech through an intuitive web UI.
 
 ## Features
 
-- **Multi-model image generation** — GPT Image, MAI Image, and FLUX families, each with dedicated playground pages
-- **Text-to-speech** — Generate audio with gpt-4o-mini-tts, including voice and style controls
-- **Two-column playground layout** — Configuration form on the left, output on the right
-- **Image editing and inpainting** — Canvas-based mask editor for targeted edits
-- **Generation history** — Track past generations with metadata and thumbnails
-- **Flexible authentication** — API key, Azure CLI token (Entra ID), and managed identity
-- **JSON-based configuration** — Only configured models appear in the UI
-- **Light and dark theme**
-- **Download** — Save individual images or batch download all results
+- **GPT Image playground** — Generate images with gpt-image-1.5, gpt-image-1, and gpt-image-1-mini with full parameter control (size, quality, background, format, moderation)
+- **FLUX Image playground** — Generate images with FLUX.2-pro and FLUX.2-flex via Azure AI Foundry serverless endpoints
+- **Text-to-Speech playground** — Convert text to speech with gpt-4o-mini-tts, 6 voice options, speed control, and style instructions
+- **Two-column layout** — Configuration form on the left, output on the right
+- **Multi-image grid** — Generate up to 4 images at once with grid view, thumbnail carousel, and single-image zoom
+- **Flexible authentication** — API key, Azure CLI token (Entra ID), and managed identity support per model
+- **JSON-based configuration** — Only configured and enabled models appear in the UI
+- **Light and dark theme** — Toggle between themes with one click
+- **Download** — Save generated images (PNG/JPEG/WebP) and audio files (MP3/OPUS/AAC/FLAC/WAV)
 
 ## Supported Models
 
-| Category   | Page       | Models                                       |
-|------------|------------|----------------------------------------------|
-| Image Gen  | GPT Image  | gpt-image-1.5, gpt-image-1, gpt-image-1-mini |
-| Image Gen  | MAI Image  | MAI-Image-2                                  |
-| Image Gen  | FLUX Image | FLUX.2-pro, FLUX.2-flex                      |
-| Audio Gen  | TTS        | gpt-4o-mini-tts                              |
+| Category  | Page       | Models                                        | API Type                     |
+|-----------|------------|-----------------------------------------------|------------------------------|
+| Image Gen | GPT Image  | gpt-image-1.5, gpt-image-1, gpt-image-1-mini | OpenAI SDK (images/generations) |
+| Image Gen | FLUX Image | FLUX.2-pro, FLUX.2-flex                       | Azure AI Foundry serverless  |
+| Audio Gen | TTS        | gpt-4o-mini-tts                               | Azure Cognitive Services     |
 
 ## Getting Started
 
@@ -47,33 +46,30 @@ Copy the example config and fill in your model endpoints and credentials:
 cp config.example.json config.json
 ```
 
-Edit `config.json` with your Azure deployment details. Models that are not configured will be hidden from the UI. See the [design doc](docs/DESIGN.md#configuration-schema) for the full schema reference.
+Edit `config.json` with your Azure deployment details. Set `"enabled": false` or remove models to hide them from the UI.
 
-Minimal example with one model configured:
+**API Key authentication:**
 
-```jsonc
+```json
 {
-  "models": {
-    "gpt-image": {
-      "enabled": true,
-      "displayName": "GPT Image",
-      "models": [
-        {
-          "id": "gpt-image-1",
-          "displayName": "GPT Image 1",
-          "endpoint": "https://<resource>.openai.azure.com",
-          "deploymentName": "gpt-image-1",
-          "apiVersion": "2024-10-21",
-          "auth": {
-            "type": "apiKey",
-            "apiKey": "your-api-key"
-          }
-        }
-      ]
-    }
+  "auth": {
+    "type": "apiKey",
+    "apiKey": "your-api-key"
   }
 }
 ```
+
+**Azure CLI authentication (recommended for development):**
+
+```json
+{
+  "auth": {
+    "type": "azureCli"
+  }
+}
+```
+
+Make sure you're logged in with `az login` before starting the dev server.
 
 ### Run
 
@@ -83,12 +79,49 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+### Test
+
+```bash
+npm test
+```
+
+## Project Structure
+
+```
+src/
+  app/
+    image/gpt/        GPT Image playground page
+    image/flux/        FLUX Image playground page
+    audio/tts/         Text-to-Speech playground page
+    api/
+      image/generate/  GPT Image API route (OpenAI SDK)
+      image/flux/      FLUX Image API route (direct REST)
+      audio/tts/       TTS API route (direct REST)
+      config/          Sanitized config endpoint
+  components/
+    image/             GenerationForm, FluxGenerationForm, ImageOutput
+    audio/             TTSForm, AudioOutput
+    layout/            Navbar, ThemeProvider
+    ui/                shadcn/ui primitives
+  hooks/               useGenerateImage, useGenerateFluxImage, useGenerateSpeech
+  lib/                 config loader, auth helper, utilities
+  types/               TypeScript type definitions
+config.example.json    Template configuration (committed)
+config.json            Your configuration with secrets (gitignored)
+```
+
 ## Tech Stack
 
 - [Next.js 15](https://nextjs.org/) (App Router) + [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
-- [Tailwind CSS](https://tailwindcss.com/) + [Radix UI](https://www.radix-ui.com/) (via shadcn/ui)
-- [OpenAI Node SDK](https://github.com/openai/openai-node) (`AzureOpenAI` client)
-- [@azure/identity](https://github.com/Azure/azure-sdk-for-js/tree/main/sdk/identity/identity) for Entra ID authentication
+- [Tailwind CSS v4](https://tailwindcss.com/) + [Radix UI](https://www.radix-ui.com/) (via shadcn/ui)
+- [OpenAI Node SDK](https://github.com/openai/openai-node) for GPT Image models
+- [@azure/identity](https://github.com/Azure/azure-sdk-for-js/tree/main/sdk/identity/identity) for Entra ID / Azure CLI authentication
+- [Vitest](https://vitest.dev/) + [Testing Library](https://testing-library.com/) for testing
+
+## Documentation
+
+- [Product Requirements (PRD)](docs/PRD.md)
+- [Technical Design](docs/DESIGN.md)
 
 ## License
 

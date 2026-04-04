@@ -2,9 +2,9 @@
 
 | Field   | Value          |
 |---------|----------------|
-| Status  | Draft          |
+| Status  | Active         |
 | Date    | 2026-04-03     |
-| Version | 0.1            |
+| Version | 0.2            |
 
 ## Problem Statement
 
@@ -185,9 +185,36 @@ Rules:
 
 ---
 
+## Implementation Status
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| GPT Image playground | Done | gpt-image-1.5, gpt-image-1, gpt-image-1-mini via OpenAI SDK |
+| FLUX Image playground | Done | FLUX.2-pro, FLUX.2-flex via Azure AI Foundry serverless endpoints |
+| TTS playground | Done | gpt-4o-mini-tts via Azure Cognitive Services deployment endpoint |
+| API key auth | Done | Per-model API key support |
+| Azure CLI auth | Done | Entra ID via @azure/identity AzureCliCredential |
+| Managed identity auth | Done | Via @azure/identity ManagedIdentityCredential |
+| JSON config | Done | Per-model config with dynamic UI hiding |
+| Two-column layout | Done | Responsive, stacks on mobile |
+| Light/dark theme | Done | next-themes with toggle |
+| Multi-image grid | Done | Grid view, thumbnail carousel, single-image zoom |
+| Download (images) | Done | PNG, JPEG, WebP with correct MIME types |
+| Download (audio) | Done | MP3, OPUS, AAC, FLAC, WAV |
+| MAI Image playground | Not started | |
+| Image editing/inpainting | Not started | |
+| Generation history | Not started | |
+| Cost tracking | Not started | |
+
+---
+
+## Resolved Questions
+
+1. **FLUX API format**: FLUX models use Azure AI Foundry serverless endpoints at `{endpoint}/providers/blackforestlabs/v1/{slug}?api-version=preview` with `width`/`height` params (not OpenAI-compatible). The URL slug is lowercase with hyphens (e.g., `flux-2-pro`) while the model name in the body uses the original casing (`FLUX.2-pro`).
+2. **TTS API format**: TTS uses Azure Cognitive Services deployment-specific endpoints at `{endpoint}/openai/deployments/{deployment}/audio/speech?api-version=2025-03-01-preview`. Returns raw audio binary.
+
 ## Open Questions
 
-1. What is the exact API schema for MAI-Image-2 and FLUX models when accessed via Azure AI Foundry? (May differ from direct provider APIs)
-2. Do FLUX models on Azure AI Foundry use the OpenAI-compatible endpoint or a separate inference endpoint?
-3. Is cost/token usage data available in API responses for all model types?
-4. Should environment variables be supported as an alternative to `config.json` for simpler single-model setups?
+1. What is the exact API schema for MAI-Image-2 when accessed via Azure AI Foundry?
+2. Is cost/token usage data available in API responses for all model types?
+3. Should environment variables be supported as an alternative to `config.json` for simpler single-model setups?

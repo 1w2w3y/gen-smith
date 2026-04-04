@@ -2,9 +2,9 @@
 
 | Field        | Value                  |
 |--------------|------------------------|
-| Status       | Draft                  |
-| Date         | 2026-04-03             |
-| Version      | 0.1                    |
+| Status       | Active                 |
+| Date         | 2026-04-04             |
+| Version      | 0.2                    |
 | Related Docs | [PRD](PRD.md)          |
 
 ## Overview
@@ -486,3 +486,49 @@ Client: creates Blob URL → renders in AudioPlayer
 - **New providers**: The provider abstraction layer makes adding direct OpenAI, Anthropic, or local model providers straightforward — implement the interface, register in the factory
 - **i18n**: Plan to use `next-intl` or similar; keep user-facing strings in locale files
 - **New model types**: Video generation, speech-to-text, or other modalities follow the same pattern: new page + API route + provider implementation
+
+---
+
+## Implemented API Routes (as-built)
+
+The following API routes are implemented and verified against live Azure endpoints:
+
+### `POST /api/image/generate` (GPT Image)
+
+Uses the OpenAI Node SDK. Endpoint: `{endpoint}/openai/v1/images/generations`.
+
+```
+Client → POST /api/image/generate { modelId, prompt, n, size, quality, outputFormat, ... }
+  Server → loadConfig → getModelConfig(modelId) → getApiKey(auth)
+  Server → new OpenAI({ apiKey, baseURL }) → client.images.generate(params)
+  Server → { images: [{ b64_json, index }], usage }
+```
+
+### `POST /api/image/flux/generate` (FLUX Image)
+
+Uses direct `fetch()` to Azure AI Foundry serverless endpoints. The URL slug is lowercase with hyphens (e.g., `flux-2-pro`) while the model name uses original casing (`FLUX.2-pro`).
+
+```
+Client → POST /api/image/flux/generate { modelId, prompt, width, height, n }
+  Server → loadConfig → getModelConfig(modelId) → getApiKey(auth)
+  Server → fetch("{endpoint}/providers/blackforestlabs/v1/{slug}?api-version=preview")
+  Server → { images: [{ b64_json, index }], usage }
+```
+
+### `POST /api/audio/tts/generate` (Text-to-Speech)
+
+Uses direct `fetch()` to Azure Cognitive Services deployment endpoint. Returns raw audio binary converted to base64.
+
+```
+Client → POST /api/audio/tts/generate { modelId, input, voice, speed?, responseFormat?, instructions? }
+  Server → loadConfig → getModelConfig(modelId) → getApiKey(auth)
+  Server → fetch("{endpoint}/openai/deployments/{deployment}/audio/speech?api-version={ver}")
+  Server → { audio: "<base64>", format: "mp3" }
+```
+
+### Shared Auth (`src/lib/auth.ts`)
+
+All routes use a shared `getApiKey(modelConfig)` helper that handles:
+- `apiKey` — returns the key directly
+- `azureCli` — `AzureCliCredential.getToken("https://cognitiveservices.azure.com/.default")`
+- `managedIdentity` — `ManagedIdentityCredential.getToken(...)` with optional clientId
