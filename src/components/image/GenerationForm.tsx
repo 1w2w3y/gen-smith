@@ -125,8 +125,8 @@ export function GenerationForm({
   };
 
   return (
-    <Card className="flex h-full w-full flex-col overflow-hidden">
-      <CardHeader className="border-b pb-4">
+    <Card className="flex h-full w-full flex-col overflow-hidden shadow-sm">
+      <CardHeader className="border-b border-border/60 pb-4">
         <CardTitle className="text-lg">{t("gptImage.title")}</CardTitle>
         <CardDescription>{t("gptImage.desc")}</CardDescription>
       </CardHeader>
@@ -134,7 +134,7 @@ export function GenerationForm({
         onSubmit={handleSubmit}
         className="flex h-full flex-1 flex-col overflow-hidden"
       >
-        <CardContent className="flex-1 space-y-5 overflow-y-auto p-4">
+        <CardContent className="flex-1 space-y-6 overflow-y-auto p-4">
           {/* Model selector */}
           <div className="space-y-2">
             <Label>{t("common.model")}</Label>
@@ -273,7 +273,7 @@ export function GenerationForm({
           </div>
         </CardContent>
 
-        <CardFooter className="border-t p-4">
+        <CardFooter className="border-t border-border/60 p-4">
           <Button
             type="submit"
             disabled={isLoading || !prompt}

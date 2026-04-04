@@ -26,7 +26,7 @@ export function AudioOutput({ audioUrl, format, isLoading }: AudioOutputProps) {
   };
 
   return (
-    <div className="flex h-full min-h-[300px] w-full flex-col items-center justify-center gap-6 overflow-hidden rounded-lg border bg-card p-6">
+    <div className="flex h-full min-h-[300px] w-full flex-col items-center justify-center gap-6 overflow-hidden rounded-xl border bg-card p-6 shadow-sm">
       {isLoading ? (
         <div className="flex flex-col items-center justify-center text-muted-foreground">
           <Loader2 className="mb-2 h-8 w-8 animate-spin" />
@@ -48,8 +48,10 @@ export function AudioOutput({ audioUrl, format, isLoading }: AudioOutputProps) {
           </Button>
         </>
       ) : (
-        <div className="text-center text-muted-foreground">
-          <Volume2 className="mx-auto mb-2 h-12 w-12 opacity-30" />
+        <div className="flex flex-col items-center text-center text-muted-foreground">
+          <div className="mb-3 rounded-full bg-muted p-4">
+            <Volume2 className="h-8 w-8 opacity-40" />
+          </div>
           <p>{t("audioOutput.empty")}</p>
         </div>
       )}

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/components/layout/LanguageProvider";
-import { Loader2, Download, Grid } from "lucide-react";
+import { Loader2, Download, Grid, ImageIcon } from "lucide-react";
 import * as React from "react";
 
 interface ImageInfo {
@@ -61,7 +61,7 @@ export function ImageOutput({ images, isLoading }: ImageOutputProps) {
   const isSingleView = typeof viewMode === "number";
 
   return (
-    <div className="flex h-full min-h-[300px] w-full flex-col items-center justify-between gap-4 overflow-hidden rounded-lg border bg-card p-4">
+    <div className="flex h-full min-h-[300px] w-full flex-col items-center justify-between gap-4 overflow-hidden rounded-xl border bg-card p-4 shadow-sm">
       {/* Image display area */}
       <div className="relative flex h-full w-full flex-grow items-center justify-center overflow-hidden">
         {isLoading ? (
@@ -96,7 +96,10 @@ export function ImageOutput({ images, isLoading }: ImageOutputProps) {
             />
           ) : null
         ) : (
-          <div className="text-center text-muted-foreground">
+          <div className="flex flex-col items-center justify-center text-center text-muted-foreground">
+            <div className="mb-3 rounded-full bg-muted p-4">
+              <ImageIcon className="h-8 w-8 opacity-40" />
+            </div>
             <p>{t("imageOutput.empty")}</p>
           </div>
         )}

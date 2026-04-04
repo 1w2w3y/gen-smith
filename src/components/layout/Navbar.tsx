@@ -20,9 +20,9 @@ export function Navbar() {
   ];
 
   return (
-    <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="border-b border-border/60 bg-background/80 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-7xl items-center px-4">
-        <Link href="/" className="mr-8 text-lg font-bold">
+        <Link href="/" className="mr-8 text-lg font-bold tracking-tight text-foreground">
           gen-smith
         </Link>
         <div className="flex items-center gap-1">
@@ -31,10 +31,10 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               className={cn(
-                "rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+                "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors duration-150",
                 pathname === link.href
                   ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground"
+                  : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
               )}
             >
               {link.label}
