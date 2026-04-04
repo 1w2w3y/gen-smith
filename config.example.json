@@ -45,9 +45,32 @@
       "models": []
     },
     "flux-image": {
-      "enabled": false,
+      "enabled": true,
       "displayName": "FLUX Image",
-      "models": []
+      "models": [
+        {
+          "id": "FLUX.2-pro",
+          "displayName": "FLUX.2 Pro",
+          "endpoint": "https://<resource>.services.ai.azure.com",
+          "deploymentName": "FLUX.2-pro",
+          "apiVersion": "preview",
+          "auth": {
+            "type": "apiKey",
+            "apiKey": "your-api-key-here"
+          }
+        },
+        {
+          "id": "FLUX.2-flex",
+          "displayName": "FLUX.2 Flex",
+          "endpoint": "https://<resource>.services.ai.azure.com",
+          "deploymentName": "FLUX.2-flex",
+          "apiVersion": "preview",
+          "auth": {
+            "type": "apiKey",
+            "apiKey": "your-api-key-here"
+          }
+        }
+      ]
     },
     "tts": {
       "enabled": false,

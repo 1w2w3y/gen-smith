@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 
 const navLinks = [
   { href: "/image/gpt", label: "GPT Image" },
+  { href: "/image/flux", label: "FLUX Image" },
 ];
 
 export function Navbar() {

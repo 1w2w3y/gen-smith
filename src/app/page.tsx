@@ -17,6 +17,15 @@ export default function HomePage() {
             Generate images with GPT Image models
           </p>
         </Link>
+        <Link
+          href="/image/flux"
+          className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm transition-colors hover:bg-accent"
+        >
+          <h2 className="mb-2 text-xl font-semibold">FLUX Image</h2>
+          <p className="text-sm text-muted-foreground">
+            Generate images with FLUX models
+          </p>
+        </Link>
       </div>
     </main>
   );
