@@ -5,6 +5,7 @@ import type { FluxGenerationFormData } from "@/components/image/FluxGenerationFo
 import { ImageOutput } from "@/components/image/ImageOutput";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useGenerateFluxImage } from "@/hooks/useGenerateFluxImage";
+import { useLanguage } from "@/components/layout/LanguageProvider";
 import * as React from "react";
 
 interface ModelOption {
@@ -16,6 +17,7 @@ export default function FluxImagePage() {
   const { images, isLoading, error, generate } = useGenerateFluxImage();
   const [models, setModels] = React.useState<ModelOption[]>([]);
   const [configError, setConfigError] = React.useState<string | null>(null);
+  const { t } = useLanguage();
 
   React.useEffect(() => {
     async function loadConfig() {
@@ -31,9 +33,7 @@ export default function FluxImagePage() {
         if (fluxImageConfig?.enabled && fluxImageConfig.models?.length > 0) {
           setModels(fluxImageConfig.models);
         } else {
-          setConfigError(
-            "No FLUX Image models configured. Please add models to config.json."
-          );
+          setConfigError(t("flux.configError"));
         }
       } catch (err: unknown) {
         const message =
@@ -43,7 +43,7 @@ export default function FluxImagePage() {
     }
 
     loadConfig();
-  }, []);
+  }, [t]);
 
   const handleGenerate = React.useCallback(
     (data: FluxGenerationFormData) => {
@@ -62,7 +62,7 @@ export default function FluxImagePage() {
     return (
       <main className="mx-auto max-w-7xl p-4 pt-8">
         <Alert variant="destructive">
-          <AlertTitle>Configuration Error</AlertTitle>
+          <AlertTitle>{t("common.configError")}</AlertTitle>
           <AlertDescription>{configError}</AlertDescription>
         </Alert>
       </main>
@@ -72,7 +72,7 @@ export default function FluxImagePage() {
   if (models.length === 0) {
     return (
       <main className="mx-auto flex min-h-[calc(100vh-3.5rem)] max-w-7xl items-center justify-center">
-        <p className="text-muted-foreground">Loading configuration...</p>
+        <p className="text-muted-foreground">{t("common.loading")}</p>
       </main>
     );
   }
@@ -80,7 +80,6 @@ export default function FluxImagePage() {
   return (
     <main className="mx-auto max-w-7xl p-4">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Left column: Form */}
         <div className="flex h-[calc(100vh-5rem)] min-h-[600px] flex-col">
           <FluxGenerationForm
             models={models}
@@ -88,12 +87,10 @@ export default function FluxImagePage() {
             isLoading={isLoading}
           />
         </div>
-
-        {/* Right column: Output */}
         <div className="flex h-[calc(100vh-5rem)] min-h-[600px] flex-col">
           {error && (
             <Alert variant="destructive" className="mb-4">
-              <AlertTitle>Error</AlertTitle>
+              <AlertTitle>{t("common.error")}</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}

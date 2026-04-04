@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/components/layout/LanguageProvider";
 import { Loader2, Download, Grid } from "lucide-react";
 import * as React from "react";
 
@@ -29,6 +30,7 @@ function getGridColsClass(count: number): string {
 }
 
 export function ImageOutput({ images, isLoading }: ImageOutputProps) {
+  const { t } = useLanguage();
   const [viewMode, setViewMode] = React.useState<"grid" | number>("grid");
 
   React.useEffect(() => {
@@ -65,7 +67,7 @@ export function ImageOutput({ images, isLoading }: ImageOutputProps) {
         {isLoading ? (
           <div className="flex flex-col items-center justify-center text-muted-foreground">
             <Loader2 className="mb-2 h-8 w-8 animate-spin" />
-            <p>Generating image...</p>
+            <p>{t("imageOutput.loading")}</p>
           </div>
         ) : images && images.length > 0 ? (
           viewMode === "grid" ? (
@@ -95,7 +97,7 @@ export function ImageOutput({ images, isLoading }: ImageOutputProps) {
           ) : null
         ) : (
           <div className="text-center text-muted-foreground">
-            <p>Generated images will appear here</p>
+            <p>{t("imageOutput.empty")}</p>
           </div>
         )}
       </div>
@@ -145,7 +147,7 @@ export function ImageOutput({ images, isLoading }: ImageOutputProps) {
             onClick={() => handleDownload(images[viewMode])}
           >
             <Download className="mr-2 h-4 w-4" />
-            Download
+            {t("common.download")}
           </Button>
         )}
       </div>

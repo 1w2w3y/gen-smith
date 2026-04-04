@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
+import { useLanguage } from "@/components/layout/LanguageProvider";
 import type { TTSVoice, TTSFormat } from "@/types/tts";
 import { Loader2 } from "lucide-react";
 import * as React from "react";
@@ -54,6 +55,7 @@ const VOICES: { value: TTSVoice; label: string }[] = [
 ];
 
 export function TTSForm({ models, onSubmit, isLoading }: TTSFormProps) {
+  const { t } = useLanguage();
   const [modelId, setModelId] = React.useState(models[0]?.id ?? "");
   const [input, setInput] = React.useState("");
   const [voice, setVoice] = React.useState<TTSVoice>("alloy");
@@ -78,26 +80,19 @@ export function TTSForm({ models, onSubmit, isLoading }: TTSFormProps) {
   return (
     <Card className="flex h-full w-full flex-col overflow-hidden">
       <CardHeader className="border-b pb-4">
-        <CardTitle className="text-lg">Text to Speech</CardTitle>
-        <CardDescription>
-          Convert text to natural-sounding speech
-        </CardDescription>
+        <CardTitle className="text-lg">{t("tts.title")}</CardTitle>
+        <CardDescription>{t("tts.desc")}</CardDescription>
       </CardHeader>
       <form
         onSubmit={handleSubmit}
         className="flex h-full flex-1 flex-col overflow-hidden"
       >
         <CardContent className="flex-1 space-y-5 overflow-y-auto p-4">
-          {/* Model selector */}
           <div className="space-y-2">
-            <Label>Model</Label>
-            <Select
-              value={modelId}
-              onValueChange={setModelId}
-              disabled={isLoading}
-            >
+            <Label>{t("common.model")}</Label>
+            <Select value={modelId} onValueChange={setModelId} disabled={isLoading}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a model" />
+                <SelectValue placeholder={t("common.selectModel")} />
               </SelectTrigger>
               <SelectContent>
                 {models.map((m) => (
@@ -109,12 +104,11 @@ export function TTSForm({ models, onSubmit, isLoading }: TTSFormProps) {
             </Select>
           </div>
 
-          {/* Text input */}
           <div className="space-y-2">
-            <Label htmlFor="tts-input">Text</Label>
+            <Label htmlFor="tts-input">{t("tts.text")}</Label>
             <Textarea
               id="tts-input"
-              placeholder="Enter the text you want to convert to speech..."
+              placeholder={t("tts.textPlaceholder")}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               required
@@ -123,9 +117,8 @@ export function TTSForm({ models, onSubmit, isLoading }: TTSFormProps) {
             />
           </div>
 
-          {/* Voice */}
           <div className="space-y-3">
-            <Label>Voice</Label>
+            <Label>{t("tts.voice")}</Label>
             <RadioGroup
               value={voice}
               onValueChange={(v) => setVoice(v as TTSVoice)}
@@ -135,10 +128,7 @@ export function TTSForm({ models, onSubmit, isLoading }: TTSFormProps) {
               {VOICES.map((v) => (
                 <div key={v.value} className="flex items-center space-x-2">
                   <RadioGroupItem value={v.value} id={`voice-${v.value}`} />
-                  <Label
-                    htmlFor={`voice-${v.value}`}
-                    className="cursor-pointer"
-                  >
+                  <Label htmlFor={`voice-${v.value}`} className="cursor-pointer">
                     {v.label}
                   </Label>
                 </div>
@@ -146,9 +136,8 @@ export function TTSForm({ models, onSubmit, isLoading }: TTSFormProps) {
             </RadioGroup>
           </div>
 
-          {/* Speed */}
           <div className="space-y-2">
-            <Label>Speed: {speed[0].toFixed(1)}x</Label>
+            <Label>{t("tts.speed")}: {speed[0].toFixed(1)}x</Label>
             <Slider
               min={0.25}
               max={4.0}
@@ -159,9 +148,8 @@ export function TTSForm({ models, onSubmit, isLoading }: TTSFormProps) {
             />
           </div>
 
-          {/* Output format */}
           <div className="space-y-3">
-            <Label>Format</Label>
+            <Label>{t("tts.format")}</Label>
             <RadioGroup
               value={responseFormat}
               onValueChange={(v) => setResponseFormat(v as TTSFormat)}
@@ -181,14 +169,11 @@ export function TTSForm({ models, onSubmit, isLoading }: TTSFormProps) {
             </RadioGroup>
           </div>
 
-          {/* Instructions (optional) */}
           <div className="space-y-2">
-            <Label htmlFor="tts-instructions">
-              Instructions (optional)
-            </Label>
+            <Label htmlFor="tts-instructions">{t("tts.instructions")}</Label>
             <Textarea
               id="tts-instructions"
-              placeholder="e.g., Speak in a cheerful and friendly tone..."
+              placeholder={t("tts.instructionsPlaceholder")}
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
               disabled={isLoading}
@@ -198,13 +183,9 @@ export function TTSForm({ models, onSubmit, isLoading }: TTSFormProps) {
         </CardContent>
 
         <CardFooter className="border-t p-4">
-          <Button
-            type="submit"
-            disabled={isLoading || !input}
-            className="w-full"
-          >
+          <Button type="submit" disabled={isLoading || !input} className="w-full">
             {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-            {isLoading ? "Generating..." : "Generate Speech"}
+            {isLoading ? t("common.generating") : t("tts.generateSpeech")}
           </Button>
         </CardFooter>
       </form>

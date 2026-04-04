@@ -6,16 +6,18 @@ import { cn } from "@/lib/utils";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-
-const navLinks = [
-  { href: "/image/gpt", label: "GPT Image" },
-  { href: "/image/flux", label: "FLUX Image" },
-  { href: "/audio/tts", label: "TTS" },
-];
+import { useLanguage } from "@/components/layout/LanguageProvider";
 
 export function Navbar() {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
+  const { locale, setLocale, t } = useLanguage();
+
+  const navLinks = [
+    { href: "/image/gpt", label: t("nav.gptImage") },
+    { href: "/image/flux", label: t("nav.fluxImage") },
+    { href: "/audio/tts", label: t("nav.tts") },
+  ];
 
   return (
     <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -39,7 +41,15 @@ export function Navbar() {
             </Link>
           ))}
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setLocale(locale === "en" ? "zh" : "en")}
+            className="text-xs font-medium"
+          >
+            {t("nav.toggleLang")}
+          </Button>
           <Button
             variant="ghost"
             size="icon"
@@ -47,7 +57,7 @@ export function Navbar() {
           >
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
+            <span className="sr-only">{t("nav.toggleTheme")}</span>
           </Button>
         </div>
       </div>

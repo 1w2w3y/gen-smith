@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render as _render, screen } from "@testing-library/react";
+import { renderWithProviders as render } from "../test-utils";
 import userEvent from "@testing-library/user-event";
 import { GenerationForm } from "@/components/image/GenerationForm";
 const mockModels = [

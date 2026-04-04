@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render as _render, screen } from "@testing-library/react";
+import { renderWithProviders as render } from "../test-utils";
 import userEvent from "@testing-library/user-event";
 import { ImageOutput } from "@/components/image/ImageOutput";
 

@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
+import { useLanguage } from "@/components/layout/LanguageProvider";
 import type {
   ImageSize,
   ImageQuality,
@@ -92,6 +93,7 @@ export function GenerationForm({
   onSubmit,
   isLoading,
 }: GenerationFormProps) {
+  const { t } = useLanguage();
   const [modelId, setModelId] = React.useState(models[0]?.id ?? "");
   const [prompt, setPrompt] = React.useState("");
   const [n, setN] = React.useState([1]);
@@ -125,10 +127,8 @@ export function GenerationForm({
   return (
     <Card className="flex h-full w-full flex-col overflow-hidden">
       <CardHeader className="border-b pb-4">
-        <CardTitle className="text-lg">Image Generation</CardTitle>
-        <CardDescription>
-          Configure parameters and generate images
-        </CardDescription>
+        <CardTitle className="text-lg">{t("gptImage.title")}</CardTitle>
+        <CardDescription>{t("gptImage.desc")}</CardDescription>
       </CardHeader>
       <form
         onSubmit={handleSubmit}
@@ -137,10 +137,10 @@ export function GenerationForm({
         <CardContent className="flex-1 space-y-5 overflow-y-auto p-4">
           {/* Model selector */}
           <div className="space-y-2">
-            <Label>Model</Label>
+            <Label>{t("common.model")}</Label>
             <Select value={modelId} onValueChange={setModelId} disabled={isLoading}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a model" />
+                <SelectValue placeholder={t("common.selectModel")} />
               </SelectTrigger>
               <SelectContent>
                 {models.map((m) => (
@@ -154,10 +154,10 @@ export function GenerationForm({
 
           {/* Prompt */}
           <div className="space-y-2">
-            <Label htmlFor="prompt">Prompt</Label>
+            <Label htmlFor="prompt">{t("common.prompt")}</Label>
             <Textarea
               id="prompt"
-              placeholder="Describe the image you want to generate..."
+              placeholder={t("common.promptPlaceholder")}
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               required
@@ -169,7 +169,7 @@ export function GenerationForm({
           {/* Number of images */}
           <div className="space-y-2">
             <Label>
-              Number of images: {n[0]}
+              {t("common.numImages")}: {n[0]}
             </Label>
             <Slider
               min={1}
@@ -183,54 +183,54 @@ export function GenerationForm({
 
           {/* Size */}
           <div className="space-y-3">
-            <Label>Size</Label>
+            <Label>{t("gptImage.size")}</Label>
             <RadioGroup
               value={size}
               onValueChange={(v) => setSize(v as ImageSize)}
               disabled={isLoading}
               className="flex flex-col gap-y-3"
             >
-              <RadioItemWithIcon value="auto" id="size-auto" label="Auto" Icon={Sparkles} />
-              <RadioItemWithIcon value="1024x1024" id="size-square" label="1024x1024 (Square)" Icon={Square} />
-              <RadioItemWithIcon value="1536x1024" id="size-landscape" label="1536x1024 (Landscape)" Icon={RectangleHorizontal} />
-              <RadioItemWithIcon value="1024x1536" id="size-portrait" label="1024x1536 (Portrait)" Icon={RectangleVertical} />
+              <RadioItemWithIcon value="auto" id="size-auto" label={t("gptImage.size.auto")} Icon={Sparkles} />
+              <RadioItemWithIcon value="1024x1024" id="size-square" label={t("gptImage.size.square")} Icon={Square} />
+              <RadioItemWithIcon value="1536x1024" id="size-landscape" label={t("gptImage.size.landscape")} Icon={RectangleHorizontal} />
+              <RadioItemWithIcon value="1024x1536" id="size-portrait" label={t("gptImage.size.portrait")} Icon={RectangleVertical} />
             </RadioGroup>
           </div>
 
           {/* Quality */}
           <div className="space-y-3">
-            <Label>Quality</Label>
+            <Label>{t("gptImage.quality")}</Label>
             <RadioGroup
               value={quality}
               onValueChange={(v) => setQuality(v as ImageQuality)}
               disabled={isLoading}
               className="flex flex-wrap gap-x-5 gap-y-3"
             >
-              <RadioItemWithIcon value="auto" id="quality-auto" label="Auto" Icon={Sparkles} />
-              <RadioItemWithIcon value="low" id="quality-low" label="Low" Icon={Tally1} />
-              <RadioItemWithIcon value="medium" id="quality-medium" label="Medium" Icon={Tally2} />
-              <RadioItemWithIcon value="high" id="quality-high" label="High" Icon={Tally3} />
+              <RadioItemWithIcon value="auto" id="quality-auto" label={t("gptImage.quality.auto")} Icon={Sparkles} />
+              <RadioItemWithIcon value="low" id="quality-low" label={t("gptImage.quality.low")} Icon={Tally1} />
+              <RadioItemWithIcon value="medium" id="quality-medium" label={t("gptImage.quality.medium")} Icon={Tally2} />
+              <RadioItemWithIcon value="high" id="quality-high" label={t("gptImage.quality.high")} Icon={Tally3} />
             </RadioGroup>
           </div>
 
           {/* Background */}
           <div className="space-y-3">
-            <Label>Background</Label>
+            <Label>{t("gptImage.background")}</Label>
             <RadioGroup
               value={background}
               onValueChange={(v) => setBackground(v as Background)}
               disabled={isLoading}
               className="flex flex-wrap gap-x-5 gap-y-3"
             >
-              <RadioItemWithIcon value="auto" id="bg-auto" label="Auto" Icon={Sparkles} />
-              <RadioItemWithIcon value="opaque" id="bg-opaque" label="Opaque" Icon={BrickWall} />
-              <RadioItemWithIcon value="transparent" id="bg-transparent" label="Transparent" Icon={Eraser} />
+              <RadioItemWithIcon value="auto" id="bg-auto" label={t("gptImage.background.auto")} Icon={Sparkles} />
+              <RadioItemWithIcon value="opaque" id="bg-opaque" label={t("gptImage.background.opaque")} Icon={BrickWall} />
+              <RadioItemWithIcon value="transparent" id="bg-transparent" label={t("gptImage.background.transparent")} Icon={Eraser} />
             </RadioGroup>
           </div>
 
           {/* Output format */}
           <div className="space-y-3">
-            <Label>Output Format</Label>
+            <Label>{t("gptImage.outputFormat")}</Label>
             <RadioGroup
               value={outputFormat}
               onValueChange={(v) => setOutputFormat(v as OutputFormat)}
@@ -246,7 +246,7 @@ export function GenerationForm({
           {/* Compression */}
           {showCompression && (
             <div className="space-y-2">
-              <Label>Compression: {compression[0]}%</Label>
+              <Label>{t("gptImage.compression")}: {compression[0]}%</Label>
               <Slider
                 min={0}
                 max={100}
@@ -260,15 +260,15 @@ export function GenerationForm({
 
           {/* Moderation */}
           <div className="space-y-3">
-            <Label>Moderation</Label>
+            <Label>{t("gptImage.moderation")}</Label>
             <RadioGroup
               value={moderation}
               onValueChange={(v) => setModeration(v as Moderation)}
               disabled={isLoading}
               className="flex flex-wrap gap-x-5 gap-y-3"
             >
-              <RadioItemWithIcon value="auto" id="mod-auto" label="Auto" Icon={ShieldCheck} />
-              <RadioItemWithIcon value="low" id="mod-low" label="Low" Icon={ShieldAlert} />
+              <RadioItemWithIcon value="auto" id="mod-auto" label={t("gptImage.moderation.auto")} Icon={ShieldCheck} />
+              <RadioItemWithIcon value="low" id="mod-low" label={t("gptImage.moderation.low")} Icon={ShieldAlert} />
             </RadioGroup>
           </div>
         </CardContent>
@@ -280,7 +280,7 @@ export function GenerationForm({
             className="w-full"
           >
             {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-            {isLoading ? "Generating..." : "Generate"}
+            {isLoading ? t("common.generating") : t("common.generate")}
           </Button>
         </CardFooter>
       </form>
