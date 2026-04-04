@@ -1,0 +1,58 @@
+{
+  "models": {
+    "gpt-image": {
+      "enabled": true,
+      "displayName": "GPT Image",
+      "models": [
+        {
+          "id": "gpt-image-1.5",
+          "displayName": "GPT Image 1.5",
+          "endpoint": "https://<resource>.openai.azure.com",
+          "deploymentName": "gpt-image-1.5",
+          "apiVersion": "2024-10-21",
+          "auth": {
+            "type": "apiKey",
+            "apiKey": "your-api-key-here"
+          }
+        },
+        {
+          "id": "gpt-image-1",
+          "displayName": "GPT Image 1",
+          "endpoint": "https://<resource>.openai.azure.com",
+          "deploymentName": "gpt-image-1",
+          "apiVersion": "2024-10-21",
+          "auth": {
+            "type": "apiKey",
+            "apiKey": "your-api-key-here"
+          }
+        },
+        {
+          "id": "gpt-image-1-mini",
+          "displayName": "GPT Image 1 Mini",
+          "endpoint": "https://<resource>.openai.azure.com",
+          "deploymentName": "gpt-image-1-mini",
+          "apiVersion": "2024-10-21",
+          "auth": {
+            "type": "apiKey",
+            "apiKey": "your-api-key-here"
+          }
+        }
+      ]
+    },
+    "mai-image": {
+      "enabled": false,
+      "displayName": "MAI Image",
+      "models": []
+    },
+    "flux-image": {
+      "enabled": false,
+      "displayName": "FLUX Image",
+      "models": []
+    },
+    "tts": {
+      "enabled": false,
+      "displayName": "Text to Speech",
+      "models": []
+    }
+  }
+}
