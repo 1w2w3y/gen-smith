@@ -7,7 +7,7 @@ export default function HomePage() {
       <p className="mb-8 text-lg text-muted-foreground">
         Playground for generative AI models on Azure AI Foundry
       </p>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Link
           href="/image/gpt"
           className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm transition-colors hover:bg-accent"
@@ -24,6 +24,15 @@ export default function HomePage() {
           <h2 className="mb-2 text-xl font-semibold">FLUX Image</h2>
           <p className="text-sm text-muted-foreground">
             Generate images with FLUX models
+          </p>
+        </Link>
+        <Link
+          href="/audio/tts"
+          className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm transition-colors hover:bg-accent"
+        >
+          <h2 className="mb-2 text-xl font-semibold">Text to Speech</h2>
+          <p className="text-sm text-muted-foreground">
+            Convert text to natural-sounding speech
           </p>
         </Link>
       </div>

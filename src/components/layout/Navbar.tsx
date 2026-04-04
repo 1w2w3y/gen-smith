@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 const navLinks = [
   { href: "/image/gpt", label: "GPT Image" },
   { href: "/image/flux", label: "FLUX Image" },
+  { href: "/audio/tts", label: "TTS" },
 ];
 
 export function Navbar() {

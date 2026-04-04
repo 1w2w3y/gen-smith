@@ -73,9 +73,21 @@
       ]
     },
     "tts": {
-      "enabled": false,
+      "enabled": true,
       "displayName": "Text to Speech",
-      "models": []
+      "models": [
+        {
+          "id": "gpt-4o-mini-tts",
+          "displayName": "GPT-4o Mini TTS",
+          "endpoint": "https://<resource>.cognitiveservices.azure.com",
+          "deploymentName": "gpt-4o-mini-tts",
+          "apiVersion": "2025-03-01-preview",
+          "auth": {
+            "type": "apiKey",
+            "apiKey": "your-api-key-here"
+          }
+        }
+      ]
     }
   }
 }
