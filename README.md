@@ -2,6 +2,8 @@
 
 A lightweight playground for generative AI models — connect to Azure AI Foundry and experiment with image generation and text-to-speech through an intuitive web UI.
 
+![Home Page](docs/screenshots/home.png)
+
 ## Features
 
 - **GPT Image playground** — Generate images with gpt-image-1.5, gpt-image-1, and gpt-image-1-mini with full parameter control (size, quality, background, format, moderation)
@@ -11,8 +13,19 @@ A lightweight playground for generative AI models — connect to Azure AI Foundr
 - **Multi-image grid** — Generate up to 4 images at once with grid view, thumbnail carousel, and single-image zoom
 - **Flexible authentication** — API key, Azure CLI token (Entra ID), and managed identity support per model
 - **JSON-based configuration** — Only configured and enabled models appear in the UI
-- **Light and dark theme** — Toggle between themes with one click
+- **Light and dark theme** — Elegant light theme by default with soft indigo accents, dark theme toggle included
+- **Bilingual UI** — English and Chinese with automatic browser language detection
 - **Download** — Save generated images (PNG/JPEG/WebP) and audio files (MP3/OPUS/AAC/FLAC/WAV)
+
+## Screenshots
+
+### GPT Image Playground
+
+![GPT Image Playground](docs/screenshots/gpt-image.png)
+
+### Text to Speech Playground
+
+![Text to Speech Playground](docs/screenshots/tts.png)
 
 ## Supported Models
 
@@ -101,7 +114,7 @@ src/
   components/
     image/             GenerationForm, FluxGenerationForm, ImageOutput
     audio/             TTSForm, AudioOutput
-    layout/            Navbar, ThemeProvider
+    layout/            Navbar, ThemeProvider, LanguageProvider
     ui/                shadcn/ui primitives
   hooks/               useGenerateImage, useGenerateFluxImage, useGenerateSpeech
   lib/                 config loader, auth helper, utilities
