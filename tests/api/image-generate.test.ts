@@ -73,9 +73,9 @@ describe("POST /api/image/generate", () => {
     });
 
     vi.doMock("@azure/identity", () => ({
-      AzureCliCredential: vi.fn().mockImplementation(() => ({
-        getToken: mockGetToken,
-      })),
+      AzureCliCredential: vi.fn().mockImplementation(function () {
+        return { getToken: mockGetToken };
+      }),
       ManagedIdentityCredential: vi.fn(),
     }));
 
@@ -95,11 +95,13 @@ describe("POST /api/image/generate", () => {
       usage: null,
     });
 
-    vi.doMock("openai", () => ({
-      default: vi.fn().mockImplementation(() => ({
-        images: { generate: mockGen },
-      })),
-    }));
+    vi.doMock("openai", () => {
+      const MockOpenAI = vi.fn().mockImplementation(function () {
+        return { images: { generate: mockGen } };
+      });
+      MockOpenAI.APIError = class APIError extends Error {};
+      return { default: MockOpenAI };
+    });
 
     const { POST } = await import("@/app/api/image/generate/route");
 
@@ -141,11 +143,13 @@ describe("POST /api/image/generate", () => {
       usage: { prompt_tokens: 100, completion_tokens: 200, total_tokens: 300 },
     });
 
-    vi.doMock("openai", () => ({
-      default: vi.fn().mockImplementation(() => ({
-        images: { generate: mockGen },
-      })),
-    }));
+    vi.doMock("openai", () => {
+      const MockOpenAI = vi.fn().mockImplementation(function () {
+        return { images: { generate: mockGen } };
+      });
+      MockOpenAI.APIError = class APIError extends Error {};
+      return { default: MockOpenAI };
+    });
 
     const { POST } = await import("@/app/api/image/generate/route");
 
@@ -193,11 +197,13 @@ describe("POST /api/image/generate", () => {
       usage: null,
     });
 
-    vi.doMock("openai", () => ({
-      default: vi.fn().mockImplementation(() => ({
-        images: { generate: mockGen },
-      })),
-    }));
+    vi.doMock("openai", () => {
+      const MockOpenAI = vi.fn().mockImplementation(function () {
+        return { images: { generate: mockGen } };
+      });
+      MockOpenAI.APIError = class APIError extends Error {};
+      return { default: MockOpenAI };
+    });
 
     const { POST } = await import("@/app/api/image/generate/route");
 
@@ -235,11 +241,13 @@ describe("POST /api/image/generate", () => {
       usage: null,
     });
 
-    vi.doMock("openai", () => ({
-      default: vi.fn().mockImplementation(() => ({
-        images: { generate: mockGen },
-      })),
-    }));
+    vi.doMock("openai", () => {
+      const MockOpenAI = vi.fn().mockImplementation(function () {
+        return { images: { generate: mockGen } };
+      });
+      MockOpenAI.APIError = class APIError extends Error {};
+      return { default: MockOpenAI };
+    });
 
     const { POST } = await import("@/app/api/image/generate/route");
 
@@ -277,11 +285,13 @@ describe("POST /api/image/generate", () => {
       usage: null,
     });
 
-    vi.doMock("openai", () => ({
-      default: vi.fn().mockImplementation(() => ({
-        images: { generate: mockGen2 },
-      })),
-    }));
+    vi.doMock("openai", () => {
+      const MockOpenAI = vi.fn().mockImplementation(function () {
+        return { images: { generate: mockGen2 } };
+      });
+      MockOpenAI.APIError = class APIError extends Error {};
+      return { default: MockOpenAI };
+    });
 
     const { POST: POST2 } = await import("@/app/api/image/generate/route");
 
@@ -318,11 +328,13 @@ describe("POST /api/image/generate", () => {
       usage: null,
     });
 
-    vi.doMock("openai", () => ({
-      default: vi.fn().mockImplementation(() => ({
-        images: { generate: mockGen },
-      })),
-    }));
+    vi.doMock("openai", () => {
+      const MockOpenAI = vi.fn().mockImplementation(function () {
+        return { images: { generate: mockGen } };
+      });
+      MockOpenAI.APIError = class APIError extends Error {};
+      return { default: MockOpenAI };
+    });
 
     const { POST } = await import("@/app/api/image/generate/route");
 

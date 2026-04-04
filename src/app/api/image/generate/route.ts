@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     console.log(`[api/image/generate] Calling Azure OpenAI at ${baseURL} with deployment ${modelConfig.deploymentName}`);
 
     const result = await client.images.generate(
-      params as OpenAI.Images.ImageGenerateParams
+      params as unknown as OpenAI.Images.ImageGenerateParams
     );
 
     if (!result.data || result.data.length === 0) {
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       images,
-      usage: (result as Record<string, unknown>).usage ?? null,
+      usage: (result as unknown as Record<string, unknown>).usage ?? null,
     });
   } catch (error: unknown) {
     console.error("[api/image/generate] Error:", error);

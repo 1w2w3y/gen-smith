@@ -13,7 +13,7 @@ export async function getApiKey(modelConfig: ModelConfig): Promise<string> {
   const credential =
     modelConfig.auth.type === "azureCli"
       ? new AzureCliCredential()
-      : new ManagedIdentityCredential(modelConfig.auth.clientId);
+      : new ManagedIdentityCredential(modelConfig.auth.clientId ? { clientId: modelConfig.auth.clientId } : undefined);
 
   const tokenResponse = await credential.getToken(
     "https://cognitiveservices.azure.com/.default"

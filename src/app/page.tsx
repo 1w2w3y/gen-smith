@@ -13,7 +13,7 @@ export default function HomePage() {
     { href: "/image/gpt", titleKey: "home.gptImage.title", descKey: "home.gptImage.desc" },
     { href: "/image/flux", titleKey: "home.fluxImage.title", descKey: "home.fluxImage.desc" },
     { href: "/audio/tts", titleKey: "home.tts.title", descKey: "home.tts.desc" },
-  ];
+  ] as const;
 
   return (
     <main className="mx-auto flex min-h-[calc(100vh-3.5rem)] max-w-7xl flex-col items-center justify-center px-4">
