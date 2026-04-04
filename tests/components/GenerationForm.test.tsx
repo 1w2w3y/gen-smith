@@ -104,4 +104,85 @@ describe("GenerationForm", () => {
     expect(callData.background).toBe("auto");
     expect(callData.moderation).toBe("auto");
   });
+
+  it("shows compression slider only for JPEG and WebP", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <GenerationForm
+        models={mockModels}
+        onSubmit={vi.fn()}
+        isLoading={false}
+      />
+    );
+
+    // PNG by default - no compression
+    expect(screen.queryByText(/Compression/)).not.toBeInTheDocument();
+
+    // Switch to JPEG - compression should appear
+    await user.click(screen.getByText("JPEG"));
+    expect(screen.getByText(/Compression: 100%/)).toBeInTheDocument();
+
+    // Switch to WebP - compression should stay
+    await user.click(screen.getByText("WebP"));
+    expect(screen.getByText(/Compression: 100%/)).toBeInTheDocument();
+
+    // Switch back to PNG - compression should disappear
+    await user.click(screen.getByText("PNG"));
+    expect(screen.queryByText(/Compression/)).not.toBeInTheDocument();
+  });
+
+  it("includes outputCompression in form data only for JPEG/WebP", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+
+    render(
+      <GenerationForm
+        models={mockModels}
+        onSubmit={onSubmit}
+        isLoading={false}
+      />
+    );
+
+    const textarea = screen.getByPlaceholderText(/describe the image/i);
+    await user.type(textarea, "test");
+
+    // Submit with PNG - no compression in data
+    await user.click(screen.getByRole("button", { name: /generate/i }));
+    expect(onSubmit.mock.calls[0][0].outputCompression).toBeUndefined();
+
+    // Switch to JPEG and submit
+    onSubmit.mockClear();
+    await user.click(screen.getByText("JPEG"));
+    await user.click(screen.getByRole("button", { name: /generate/i }));
+    expect(onSubmit.mock.calls[0][0].outputCompression).toBe(100);
+    expect(onSubmit.mock.calls[0][0].outputFormat).toBe("jpeg");
+  });
+
+  it("submits with changed radio options", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+
+    render(
+      <GenerationForm
+        models={mockModels}
+        onSubmit={onSubmit}
+        isLoading={false}
+      />
+    );
+
+    const textarea = screen.getByPlaceholderText(/describe the image/i);
+    await user.type(textarea, "test");
+
+    // Change various options
+    await user.click(screen.getByText("1536x1024 (Landscape)"));
+    await user.click(screen.getByText("High"));
+    await user.click(screen.getByText("Transparent"));
+
+    await user.click(screen.getByRole("button", { name: /generate/i }));
+    const data = onSubmit.mock.calls[0][0];
+    expect(data.size).toBe("1536x1024");
+    expect(data.quality).toBe("high");
+    expect(data.background).toBe("transparent");
+  });
 });
