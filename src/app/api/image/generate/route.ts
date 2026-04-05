@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getModelConfig } from "@/lib/config";
 import { getApiKey } from "@/lib/auth";
+import { trackGeneration, trackException } from "@/lib/telemetry";
 import OpenAI from "openai";
 
 export async function POST(request: NextRequest) {
+  let requestModelId = "unknown";
   try {
     const body = await request.json();
     const {
@@ -17,6 +19,7 @@ export async function POST(request: NextRequest) {
       background = "auto",
       moderation = "auto",
     } = body;
+    requestModelId = modelId ?? "unknown";
 
     if (!modelId || !prompt) {
       return NextResponse.json(
@@ -65,9 +68,27 @@ export async function POST(request: NextRequest) {
 
     console.log(`[api/image/generate] Calling Azure OpenAI at ${baseURL} with deployment ${modelConfig.deploymentName}`);
 
+    const startTime = Date.now();
     const result = await client.images.generate(
       params as unknown as OpenAI.Images.ImageGenerateParams
     );
+    const durationMs = Date.now() - startTime;
+
+    trackGeneration("ImageGeneration", {
+      modelId,
+      deploymentName: modelConfig.deploymentName,
+      prompt,
+      size,
+      quality,
+      outputFormat,
+      background,
+      moderation,
+      imageCount: String(params.n),
+    }, {
+      durationMs,
+      promptLength: prompt.length,
+      imageCount: params.n as number,
+    });
 
     if (!result.data || result.data.length === 0) {
       return NextResponse.json(
@@ -87,6 +108,11 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: unknown) {
     console.error("[api/image/generate] Error:", error);
+
+    trackException(
+      error instanceof Error ? error : new Error(String(error)),
+      { modelFamily: "gpt-image", modelId: requestModelId }
+    );
 
     let message = "An unexpected error occurred";
     let status = 500;

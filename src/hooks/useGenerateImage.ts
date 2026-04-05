@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import type { GeneratedImage } from "@/types/image";
+import { trackClientEvent } from "@/lib/telemetry-browser";
 
 interface UseGenerateImageResult {
   images: (GeneratedImage & { format: string })[] | null;
@@ -43,6 +44,7 @@ export function useGenerateImage(): UseGenerateImageResult {
       setError(null);
       setImages(null);
 
+      const startTime = Date.now();
       try {
         const response = await fetch("/api/image/generate", {
           method: "POST",
@@ -67,6 +69,18 @@ export function useGenerateImage(): UseGenerateImageResult {
               })
             )
           );
+          trackClientEvent("ClientImageGeneration", {
+            modelId: params.modelId,
+            prompt: params.prompt,
+            size: params.size,
+            quality: params.quality,
+            outputFormat: params.outputFormat,
+            background: params.background,
+            imageCount: String(params.n),
+          }, {
+            durationMs: Date.now() - startTime,
+            promptLength: params.prompt.length,
+          });
         } else {
           throw new Error("No images returned from API");
         }
@@ -75,6 +89,12 @@ export function useGenerateImage(): UseGenerateImageResult {
           err instanceof Error ? err.message : "An unexpected error occurred";
         setError(message);
         setImages(null);
+        trackClientEvent("ClientImageGenerationError", {
+          modelId: params.modelId,
+          errorMessage: message,
+        }, {
+          durationMs: Date.now() - startTime,
+        });
       } finally {
         setIsLoading(false);
       }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { trackClientEvent } from "@/lib/telemetry-browser";
 
 interface UseGenerateSpeechResult {
   audioUrl: string | null;
@@ -51,6 +52,7 @@ export function useGenerateSpeech(): UseGenerateSpeechResult {
       setAudioUrl(null);
       setFormat(null);
 
+      const startTime = Date.now();
       try {
         const response = await fetch("/api/audio/tts/generate", {
           method: "POST",
@@ -84,12 +86,29 @@ export function useGenerateSpeech(): UseGenerateSpeechResult {
 
         setAudioUrl(url);
         setFormat(fmt);
+        trackClientEvent("ClientTTSGeneration", {
+          modelId: params.modelId,
+          input: params.input,
+          voice: params.voice,
+          speed: params.speed !== undefined ? String(params.speed) : "",
+          responseFormat: params.responseFormat || "mp3",
+          instructions: params.instructions || "",
+        }, {
+          durationMs: Date.now() - startTime,
+          inputLength: params.input.length,
+        });
       } catch (err: unknown) {
         const message =
           err instanceof Error ? err.message : "An unexpected error occurred";
         setError(message);
         setAudioUrl(null);
         setFormat(null);
+        trackClientEvent("ClientTTSGenerationError", {
+          modelId: params.modelId,
+          errorMessage: message,
+        }, {
+          durationMs: Date.now() - startTime,
+        });
       } finally {
         setIsLoading(false);
       }

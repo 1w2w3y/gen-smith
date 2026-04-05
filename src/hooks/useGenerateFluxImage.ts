@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import type { GeneratedImage } from "@/types/image";
+import { trackClientEvent } from "@/lib/telemetry-browser";
 
 interface UseGenerateFluxImageResult {
   images: (GeneratedImage & { format: string })[] | null;
@@ -35,6 +36,7 @@ export function useGenerateFluxImage(): UseGenerateFluxImageResult {
       setError(null);
       setImages(null);
 
+      const startTime = Date.now();
       try {
         const response = await fetch("/api/image/flux/generate", {
           method: "POST",
@@ -60,6 +62,16 @@ export function useGenerateFluxImage(): UseGenerateFluxImageResult {
               })
             )
           );
+          trackClientEvent("ClientFluxImageGeneration", {
+            modelId: params.modelId,
+            prompt: params.prompt,
+            width: String(params.width),
+            height: String(params.height),
+            imageCount: String(params.n),
+          }, {
+            durationMs: Date.now() - startTime,
+            promptLength: params.prompt.length,
+          });
         } else {
           throw new Error("No images returned from API");
         }
@@ -68,6 +80,12 @@ export function useGenerateFluxImage(): UseGenerateFluxImageResult {
           err instanceof Error ? err.message : "An unexpected error occurred";
         setError(message);
         setImages(null);
+        trackClientEvent("ClientFluxImageGenerationError", {
+          modelId: params.modelId,
+          errorMessage: message,
+        }, {
+          durationMs: Date.now() - startTime,
+        });
       } finally {
         setIsLoading(false);
       }

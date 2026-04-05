@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getModelConfig } from "@/lib/config";
 import { getApiKey } from "@/lib/auth";
+import { trackGeneration, trackException } from "@/lib/telemetry";
 
 export async function POST(request: NextRequest) {
+  let requestModelId = "unknown";
   try {
     const body = await request.json();
     const {
@@ -13,6 +15,7 @@ export async function POST(request: NextRequest) {
       responseFormat = "mp3",
       instructions,
     } = body;
+    requestModelId = modelId ?? "unknown";
 
     if (!modelId || !input) {
       return NextResponse.json(
@@ -48,6 +51,7 @@ export async function POST(request: NextRequest) {
 
     console.log(`[api/audio/tts/generate] Calling Azure TTS at ${url}`);
 
+    const startTime = Date.now();
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -73,6 +77,20 @@ export async function POST(request: NextRequest) {
     // TTS returns raw audio binary — convert to base64
     const audioBuffer = await response.arrayBuffer();
     const base64Audio = Buffer.from(audioBuffer).toString("base64");
+    const durationMs = Date.now() - startTime;
+
+    trackGeneration("TTSGeneration", {
+      modelId,
+      deploymentName: modelConfig.deploymentName,
+      input,
+      voice,
+      speed: speed !== undefined ? String(speed) : "",
+      responseFormat,
+      instructions: instructions || "",
+    }, {
+      durationMs,
+      inputLength: input.length,
+    });
 
     return NextResponse.json({
       audio: base64Audio,
@@ -80,6 +98,11 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: unknown) {
     console.error("[api/audio/tts/generate] Error:", error);
+
+    trackException(
+      error instanceof Error ? error : new Error(String(error)),
+      { modelFamily: "tts", modelId: requestModelId }
+    );
 
     const message =
       error instanceof Error ? error.message : "An unexpected error occurred";

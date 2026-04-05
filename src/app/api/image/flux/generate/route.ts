@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getModelConfig } from "@/lib/config";
 import { getApiKey } from "@/lib/auth";
+import { trackGeneration, trackException } from "@/lib/telemetry";
 
 export async function POST(request: NextRequest) {
+  let requestModelId = "unknown";
   try {
     const body = await request.json();
     const {
@@ -12,6 +14,7 @@ export async function POST(request: NextRequest) {
       height = 1024,
       n = 1,
     } = body;
+    requestModelId = modelId ?? "unknown";
 
     if (!modelId || !prompt) {
       return NextResponse.json(
@@ -46,6 +49,7 @@ export async function POST(request: NextRequest) {
 
     console.log(`[api/image/flux/generate] Calling Azure AI Foundry at ${url}`);
 
+    const startTime = Date.now();
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -69,6 +73,20 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await response.json();
+    const durationMs = Date.now() - startTime;
+
+    trackGeneration("FluxImageGeneration", {
+      modelId,
+      deploymentName: modelConfig.deploymentName,
+      prompt,
+      width: String(width),
+      height: String(height),
+      imageCount: String(requestBody.n),
+    }, {
+      durationMs,
+      promptLength: prompt.length,
+      imageCount: requestBody.n as number,
+    });
 
     if (!result.data || result.data.length === 0) {
       return NextResponse.json(
@@ -90,6 +108,11 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: unknown) {
     console.error("[api/image/flux/generate] Error:", error);
+
+    trackException(
+      error instanceof Error ? error : new Error(String(error)),
+      { modelFamily: "flux-image", modelId: requestModelId }
+    );
 
     const message =
       error instanceof Error ? error.message : "An unexpected error occurred";
