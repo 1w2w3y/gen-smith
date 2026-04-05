@@ -102,7 +102,7 @@ npm test
 
 ## Docker
 
-The pre-built Docker image is available on GitHub Container Registry:
+The pre-built Docker image is available on GitHub Container Registry. The container listens on **port 3000**.
 
 ```
 ghcr.io/1w2w3y/gen-smith:latest
