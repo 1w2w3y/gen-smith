@@ -145,10 +145,12 @@ docker run -p 3000:3000 \
 | `GEN_SMITH_GPT_IMAGE_API_VERSION` | API 版本（默认：`2024-10-21`） |
 | `GEN_SMITH_FLUX_IMAGE_ENDPOINT` | Azure AI Foundry 端点 |
 | `GEN_SMITH_FLUX_IMAGE_API_KEY` | API 密钥 |
-| `GEN_SMITH_FLUX_IMAGE_DEPLOYMENTS` | 逗号分隔（默认：`FLUX.2-pro`） |
+| `GEN_SMITH_FLUX_IMAGE_DEPLOYMENTS` | 逗号分隔（默认：`FLUX.2-pro:flux-2-pro`） |
 | `GEN_SMITH_TTS_ENDPOINT` | Azure 认知服务端点 |
 | `GEN_SMITH_TTS_API_KEY` | API 密钥 |
 | `GEN_SMITH_TTS_DEPLOYMENTS` | 逗号分隔（默认：`gpt-4o-mini-tts`） |
+
+部署条目支持 `id:deploymentName` 语法，用于模型 ID 与 Azure 部署名称不同的情况（例如 `FLUX.2-pro:flux-2-pro`）。
 
 也可以挂载 `config.json` 进行高级配置：
 

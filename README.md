@@ -145,10 +145,12 @@ Each model family is configured with a `GEN_SMITH_<FAMILY>_` prefix. Set the `_E
 | `GEN_SMITH_GPT_IMAGE_API_VERSION` | API version (default: `2024-10-21`) |
 | `GEN_SMITH_FLUX_IMAGE_ENDPOINT` | Azure AI Foundry endpoint |
 | `GEN_SMITH_FLUX_IMAGE_API_KEY` | API key |
-| `GEN_SMITH_FLUX_IMAGE_DEPLOYMENTS` | Comma-separated (default: `FLUX.2-pro`) |
+| `GEN_SMITH_FLUX_IMAGE_DEPLOYMENTS` | Comma-separated (default: `FLUX.2-pro:flux-2-pro`) |
 | `GEN_SMITH_TTS_ENDPOINT` | Azure Cognitive Services endpoint |
 | `GEN_SMITH_TTS_API_KEY` | API key |
 | `GEN_SMITH_TTS_DEPLOYMENTS` | Comma-separated (default: `gpt-4o-mini-tts`) |
+
+Deployment entries support `id:deploymentName` syntax when the model ID differs from the Azure deployment name (e.g., `FLUX.2-pro:flux-2-pro`).
 
 Alternatively, mount a `config.json` for advanced configuration:
 

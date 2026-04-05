@@ -22,7 +22,7 @@ const ENV_FAMILIES = [
     key: "flux-image" as const,
     prefix: "GEN_SMITH_FLUX_IMAGE",
     displayName: "FLUX Image",
-    defaultDeployments: ["FLUX.2-pro"],
+    defaultDeployments: ["FLUX.2-pro:flux-2-pro"],
     defaultApiVersion: "preview",
   },
   {
@@ -54,18 +54,24 @@ function loadConfigFromEnv(): AppConfig | null {
       ? deploymentsRaw.split(",").map((d) => d.trim()).filter(Boolean)
       : [...family.defaultDeployments];
 
-    const familyModels: ModelConfig[] = deployments.map((name) => ({
-      id: name,
-      displayName: name,
-      endpoint,
-      deploymentName: name,
-      apiVersion,
-      auth: {
-        type: authType,
-        ...(authType === "apiKey" ? { apiKey } : {}),
-        ...(clientId ? { clientId } : {}),
-      },
-    }));
+    // Support "id:deploymentName" syntax (e.g. "FLUX.2-pro:flux-2-pro")
+    const familyModels: ModelConfig[] = deployments.map((entry) => {
+      const colonIdx = entry.indexOf(":");
+      const id = colonIdx >= 0 ? entry.slice(0, colonIdx) : entry;
+      const deploymentName = colonIdx >= 0 ? entry.slice(colonIdx + 1) : entry;
+      return {
+        id,
+        displayName: id,
+        endpoint,
+        deploymentName,
+        apiVersion,
+        auth: {
+          type: authType,
+          ...(authType === "apiKey" ? { apiKey } : {}),
+          ...(clientId ? { clientId } : {}),
+        },
+      };
+    });
 
     models[family.key] = {
       enabled: true,
