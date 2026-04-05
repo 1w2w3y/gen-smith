@@ -1,3 +1,5 @@
+[English](README.md) | [中文](README.zh.md)
+
 # gen-smith
 
 A lightweight playground for generative AI models — connect to Azure AI Foundry and experiment with image generation and text-to-speech through an intuitive web UI.
