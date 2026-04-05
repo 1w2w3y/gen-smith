@@ -47,6 +47,7 @@ interface FluxGenerationFormProps {
   models: ModelOption[];
   onSubmit: (data: FluxGenerationFormData) => void;
   isLoading: boolean;
+  defaultValues?: Partial<FluxGenerationFormData>;
 }
 
 type DimensionPreset = "1024x1024" | "1536x1024" | "1024x1536" | "768x768";
@@ -78,17 +79,24 @@ const DIMENSION_PRESETS: Record<DimensionPreset, { width: number; height: number
   "768x768": { width: 768, height: 768 },
 };
 
+function toDimensionPreset(width?: number, height?: number): DimensionPreset {
+  if (!width || !height) return "1024x1024";
+  const key = `${width}x${height}` as DimensionPreset;
+  return key in DIMENSION_PRESETS ? key : "1024x1024";
+}
+
 export function FluxGenerationForm({
   models,
   onSubmit,
   isLoading,
+  defaultValues,
 }: FluxGenerationFormProps) {
   const { t } = useLanguage();
-  const [modelId, setModelId] = React.useState(models[0]?.id ?? "");
-  const [prompt, setPrompt] = React.useState("");
-  const [n, setN] = React.useState([1]);
+  const [modelId, setModelId] = React.useState(defaultValues?.modelId ?? models[0]?.id ?? "");
+  const [prompt, setPrompt] = React.useState(defaultValues?.prompt ?? "");
+  const [n, setN] = React.useState([defaultValues?.n ?? 1]);
   const [dimensionPreset, setDimensionPreset] =
-    React.useState<DimensionPreset>("1024x1024");
+    React.useState<DimensionPreset>(toDimensionPreset(defaultValues?.width, defaultValues?.height));
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

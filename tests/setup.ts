@@ -1,4 +1,5 @@
 import "@testing-library/jest-dom/vitest";
+import "fake-indexeddb/auto";
 
 // Polyfill ResizeObserver for jsdom (used by Radix UI)
 global.ResizeObserver = class ResizeObserver {

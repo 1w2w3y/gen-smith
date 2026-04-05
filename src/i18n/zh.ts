@@ -83,6 +83,20 @@ const zh = {
   // Audio Output
   "audioOutput.loading": "正在生成语音...",
   "audioOutput.empty": "生成的音频将显示在这里",
+
+  // History
+  "history.title": "历史记录",
+  "history.output": "输出",
+  "history.empty": "暂无生成历史",
+  "history.clearAll": "清除全部",
+  "history.clearConfirm": "确定要清除所有历史记录吗？",
+  "history.restore": "恢复",
+  "history.images": "张图片",
+  "history.viewImages": "查看图片",
+  "history.ago.justNow": "刚刚",
+  "history.ago.minutes": "{n}分钟前",
+  "history.ago.hours": "{n}小时前",
+  "history.ago.days": "{n}天前",
 } as const;
 
 export default zh;

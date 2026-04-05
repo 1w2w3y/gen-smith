@@ -66,6 +66,7 @@ interface GenerationFormProps {
   models: ModelOption[];
   onSubmit: (data: GenerationFormData) => void;
   isLoading: boolean;
+  defaultValues?: Partial<GenerationFormData>;
 }
 
 const RadioItemWithIcon = ({
@@ -92,17 +93,18 @@ export function GenerationForm({
   models,
   onSubmit,
   isLoading,
+  defaultValues,
 }: GenerationFormProps) {
   const { t } = useLanguage();
-  const [modelId, setModelId] = React.useState(models[0]?.id ?? "");
-  const [prompt, setPrompt] = React.useState("");
-  const [n, setN] = React.useState([1]);
-  const [size, setSize] = React.useState<ImageSize>("1024x1024");
-  const [quality, setQuality] = React.useState<ImageQuality>("medium");
-  const [outputFormat, setOutputFormat] = React.useState<OutputFormat>("png");
-  const [compression, setCompression] = React.useState([100]);
-  const [background, setBackground] = React.useState<Background>("auto");
-  const [moderation, setModeration] = React.useState<Moderation>("auto");
+  const [modelId, setModelId] = React.useState(defaultValues?.modelId ?? models[0]?.id ?? "");
+  const [prompt, setPrompt] = React.useState(defaultValues?.prompt ?? "");
+  const [n, setN] = React.useState([defaultValues?.n ?? 1]);
+  const [size, setSize] = React.useState<ImageSize>(defaultValues?.size ?? "1024x1024");
+  const [quality, setQuality] = React.useState<ImageQuality>(defaultValues?.quality ?? "medium");
+  const [outputFormat, setOutputFormat] = React.useState<OutputFormat>(defaultValues?.outputFormat ?? "png");
+  const [compression, setCompression] = React.useState([defaultValues?.outputCompression ?? 100]);
+  const [background, setBackground] = React.useState<Background>(defaultValues?.background ?? "auto");
+  const [moderation, setModeration] = React.useState<Moderation>(defaultValues?.moderation ?? "auto");
 
   const showCompression = outputFormat === "jpeg" || outputFormat === "webp";
 

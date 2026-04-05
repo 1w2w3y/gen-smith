@@ -83,6 +83,20 @@ const en = {
   // Audio Output
   "audioOutput.loading": "Generating speech...",
   "audioOutput.empty": "Generated audio will appear here",
+
+  // History
+  "history.title": "History",
+  "history.output": "Output",
+  "history.empty": "No generation history yet",
+  "history.clearAll": "Clear all",
+  "history.clearConfirm": "Are you sure you want to clear all history?",
+  "history.restore": "Restore",
+  "history.images": "images",
+  "history.viewImages": "View images",
+  "history.ago.justNow": "just now",
+  "history.ago.minutes": "{n}m ago",
+  "history.ago.hours": "{n}h ago",
+  "history.ago.days": "{n}d ago",
 } as const;
 
 export default en;

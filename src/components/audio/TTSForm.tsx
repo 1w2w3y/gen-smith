@@ -43,6 +43,7 @@ interface TTSFormProps {
   models: ModelOption[];
   onSubmit: (data: TTSFormData) => void;
   isLoading: boolean;
+  defaultValues?: Partial<TTSFormData>;
 }
 
 const VOICES: { value: TTSVoice; label: string }[] = [
@@ -54,15 +55,15 @@ const VOICES: { value: TTSVoice; label: string }[] = [
   { value: "shimmer", label: "Shimmer" },
 ];
 
-export function TTSForm({ models, onSubmit, isLoading }: TTSFormProps) {
+export function TTSForm({ models, onSubmit, isLoading, defaultValues }: TTSFormProps) {
   const { t } = useLanguage();
-  const [modelId, setModelId] = React.useState(models[0]?.id ?? "");
-  const [input, setInput] = React.useState("");
-  const [voice, setVoice] = React.useState<TTSVoice>("alloy");
-  const [speed, setSpeed] = React.useState([1.0]);
+  const [modelId, setModelId] = React.useState(defaultValues?.modelId ?? models[0]?.id ?? "");
+  const [input, setInput] = React.useState(defaultValues?.input ?? "");
+  const [voice, setVoice] = React.useState<TTSVoice>(defaultValues?.voice ?? "alloy");
+  const [speed, setSpeed] = React.useState([defaultValues?.speed ?? 1.0]);
   const [responseFormat, setResponseFormat] =
-    React.useState<TTSFormat>("mp3");
-  const [instructions, setInstructions] = React.useState("");
+    React.useState<TTSFormat>(defaultValues?.responseFormat ?? "mp3");
+  const [instructions, setInstructions] = React.useState(defaultValues?.instructions ?? "");
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
