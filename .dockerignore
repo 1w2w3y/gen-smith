@@ -1,0 +1,36 @@
+node_modules/
+.next/
+out/
+build/
+coverage/
+.turbo/
+generated-images/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config with secrets
+config.json
+
+# Logs
+*.log
+
+# Docs
+docs/
+*.md
+!config.example.json
+
+# Tests
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+vitest.config.ts
