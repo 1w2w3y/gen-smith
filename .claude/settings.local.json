@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(npm test:*)",
+      "Bash(npm install:*)",
+      "WebFetch(domain:localhost)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3001/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3001/image/gpt)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3001/image/flux)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3001/audio/tts)",
+      "Bash(curl -s http://localhost:3001/image/gpt)",
+      "Bash(curl -s http://localhost:3001/audio/tts)"
+    ]
+  }
+}
