@@ -100,6 +100,60 @@ Open [http://localhost:3000](http://localhost:3000).
 npm test
 ```
 
+## Docker
+
+The pre-built Docker image is available on GitHub Container Registry:
+
+```
+ghcr.io/1w2w3y/gen-smith:latest
+```
+
+### Quick Start
+
+Pull and run with environment variables to configure models:
+
+```bash
+docker pull ghcr.io/1w2w3y/gen-smith:latest
+
+docker run -p 3000:3000 ghcr.io/1w2w3y/gen-smith:latest
+```
+
+### Example: GPT Image with Managed Identity
+
+```bash
+docker run -p 3000:3000 \
+  -e GEN_SMITH_GPT_IMAGE_ENDPOINT=https://your-resource.openai.azure.com \
+  -e GEN_SMITH_GPT_IMAGE_AUTH_TYPE=managedIdentity \
+  -e GEN_SMITH_GPT_IMAGE_CLIENT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
+  -e GEN_SMITH_GPT_IMAGE_DEPLOYMENTS=gpt-image-1 \
+  ghcr.io/1w2w3y/gen-smith:latest
+```
+
+### Environment Variables
+
+Each model family is configured with a `GEN_SMITH_<FAMILY>_` prefix. Set the `_ENDPOINT` variable to enable a family — only enabled families appear in the UI.
+
+| Variable | Description |
+|----------|-------------|
+| `GEN_SMITH_GPT_IMAGE_ENDPOINT` | Azure OpenAI endpoint |
+| `GEN_SMITH_GPT_IMAGE_API_KEY` | API key (if using `apiKey` auth) |
+| `GEN_SMITH_GPT_IMAGE_AUTH_TYPE` | `apiKey` (default), `azureCli`, or `managedIdentity` |
+| `GEN_SMITH_GPT_IMAGE_CLIENT_ID` | Client ID for managed identity |
+| `GEN_SMITH_GPT_IMAGE_DEPLOYMENTS` | Comma-separated deployment names (default: `gpt-image-1`) |
+| `GEN_SMITH_GPT_IMAGE_API_VERSION` | API version (default: `2024-10-21`) |
+| `GEN_SMITH_FLUX_IMAGE_ENDPOINT` | Azure AI Foundry endpoint |
+| `GEN_SMITH_FLUX_IMAGE_API_KEY` | API key |
+| `GEN_SMITH_FLUX_IMAGE_DEPLOYMENTS` | Comma-separated (default: `FLUX.2-pro`) |
+| `GEN_SMITH_TTS_ENDPOINT` | Azure Cognitive Services endpoint |
+| `GEN_SMITH_TTS_API_KEY` | API key |
+| `GEN_SMITH_TTS_DEPLOYMENTS` | Comma-separated (default: `gpt-4o-mini-tts`) |
+
+Alternatively, mount a `config.json` for advanced configuration:
+
+```bash
+docker run -p 3000:3000 -v ./config.json:/app/config.json ghcr.io/1w2w3y/gen-smith:latest
+```
+
 ## Project Structure
 
 ```
