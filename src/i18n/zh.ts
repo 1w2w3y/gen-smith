@@ -15,6 +15,7 @@ const zh = {
   "home.fluxImage.desc": "使用 FLUX 模型生成图像",
   "home.tts.title": "语音合成",
   "home.tts.desc": "将文本转换为自然语音",
+  "home.noModels": "未配置任何模型。请设置 GEN_SMITH_* 环境变量或提供 config.json 以开始使用。",
 
   // Common
   "common.model": "模型",
@@ -32,7 +33,7 @@ const zh = {
   // GPT Image
   "gptImage.title": "图像生成",
   "gptImage.desc": "配置参数并生成图像",
-  "gptImage.configError": "未配置 GPT Image 模型，请在 config.json 中添加。",
+  "gptImage.configError": "未配置 GPT Image 模型。请设置 GEN_SMITH_GPT_IMAGE_ENDPOINT 或在 config.json 中添加。",
   "gptImage.size": "尺寸",
   "gptImage.size.auto": "自动",
   "gptImage.size.square": "1024x1024 (正方形)",
@@ -56,7 +57,7 @@ const zh = {
   // FLUX
   "flux.title": "FLUX 图像生成",
   "flux.desc": "配置参数并使用 FLUX 模型生成图像",
-  "flux.configError": "未配置 FLUX Image 模型，请在 config.json 中添加。",
+  "flux.configError": "未配置 FLUX Image 模型。请设置 GEN_SMITH_FLUX_IMAGE_ENDPOINT 或在 config.json 中添加。",
   "flux.dimensions": "尺寸",
   "flux.dim.square": "1024x1024 (正方形)",
   "flux.dim.landscape": "1536x1024 (横向)",
@@ -66,7 +67,7 @@ const zh = {
   // TTS
   "tts.title": "语音合成",
   "tts.desc": "将文本转换为自然语音",
-  "tts.configError": "未配置 TTS 模型，请在 config.json 中添加。",
+  "tts.configError": "未配置 TTS 模型。请设置 GEN_SMITH_TTS_ENDPOINT 或在 config.json 中添加。",
   "tts.text": "文本",
   "tts.textPlaceholder": "输入要转换为语音的文本...",
   "tts.voice": "声音",

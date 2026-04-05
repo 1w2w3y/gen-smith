@@ -15,6 +15,7 @@ const en = {
   "home.fluxImage.desc": "Generate images with FLUX models",
   "home.tts.title": "Text to Speech",
   "home.tts.desc": "Convert text to natural-sounding speech",
+  "home.noModels": "No models configured. Set GEN_SMITH_* environment variables or provide a config.json to get started.",
 
   // Common
   "common.model": "Model",
@@ -32,7 +33,7 @@ const en = {
   // GPT Image
   "gptImage.title": "Image Generation",
   "gptImage.desc": "Configure parameters and generate images",
-  "gptImage.configError": "No GPT Image models configured. Please add models to config.json.",
+  "gptImage.configError": "No GPT Image models configured. Set GEN_SMITH_GPT_IMAGE_ENDPOINT or add models to config.json.",
   "gptImage.size": "Size",
   "gptImage.size.auto": "Auto",
   "gptImage.size.square": "1024x1024 (Square)",
@@ -56,7 +57,7 @@ const en = {
   // FLUX
   "flux.title": "FLUX Image Generation",
   "flux.desc": "Configure parameters and generate images with FLUX models",
-  "flux.configError": "No FLUX Image models configured. Please add models to config.json.",
+  "flux.configError": "No FLUX Image models configured. Set GEN_SMITH_FLUX_IMAGE_ENDPOINT or add models to config.json.",
   "flux.dimensions": "Dimensions",
   "flux.dim.square": "1024x1024 (Square)",
   "flux.dim.landscape": "1536x1024 (Landscape)",
@@ -66,7 +67,7 @@ const en = {
   // TTS
   "tts.title": "Text to Speech",
   "tts.desc": "Convert text to natural-sounding speech",
-  "tts.configError": "No TTS models configured. Please add models to config.json.",
+  "tts.configError": "No TTS models configured. Set GEN_SMITH_TTS_ENDPOINT or add models to config.json.",
   "tts.text": "Text",
   "tts.textPlaceholder": "Enter the text you want to convert to speech...",
   "tts.voice": "Voice",

@@ -2,27 +2,124 @@ import fs from "fs";
 import path from "path";
 import type {
   AppConfig,
+  AuthType,
   ModelConfig,
+  ModelFamilyConfig,
   SanitizedAppConfig,
 } from "@/types/config";
 
 let cachedConfig: AppConfig | null = null;
 
+const ENV_FAMILIES = [
+  {
+    key: "gpt-image" as const,
+    prefix: "GEN_SMITH_GPT_IMAGE",
+    displayName: "GPT Image",
+    defaultDeployments: ["gpt-image-1"],
+    defaultApiVersion: "2024-10-21",
+  },
+  {
+    key: "flux-image" as const,
+    prefix: "GEN_SMITH_FLUX_IMAGE",
+    displayName: "FLUX Image",
+    defaultDeployments: ["FLUX.2-pro"],
+    defaultApiVersion: "preview",
+  },
+  {
+    key: "tts" as const,
+    prefix: "GEN_SMITH_TTS",
+    displayName: "Text to Speech",
+    defaultDeployments: ["gpt-4o-mini-tts"],
+    defaultApiVersion: "2025-03-01-preview",
+  },
+] as const;
+
+function loadConfigFromEnv(): AppConfig | null {
+  const models: AppConfig["models"] = {};
+  let hasAny = false;
+
+  for (const family of ENV_FAMILIES) {
+    const endpoint = process.env[`${family.prefix}_ENDPOINT`];
+    if (!endpoint) continue;
+
+    hasAny = true;
+
+    const authType = (process.env[`${family.prefix}_AUTH_TYPE`] || "apiKey") as AuthType;
+    const apiKey = process.env[`${family.prefix}_API_KEY`] || "";
+    const clientId = process.env[`${family.prefix}_CLIENT_ID`];
+    const apiVersion = process.env[`${family.prefix}_API_VERSION`] || family.defaultApiVersion;
+
+    const deploymentsRaw = process.env[`${family.prefix}_DEPLOYMENTS`];
+    const deployments = deploymentsRaw
+      ? deploymentsRaw.split(",").map((d) => d.trim()).filter(Boolean)
+      : [...family.defaultDeployments];
+
+    const familyModels: ModelConfig[] = deployments.map((name) => ({
+      id: name,
+      displayName: name,
+      endpoint,
+      deploymentName: name,
+      apiVersion,
+      auth: {
+        type: authType,
+        ...(authType === "apiKey" ? { apiKey } : {}),
+        ...(clientId ? { clientId } : {}),
+      },
+    }));
+
+    models[family.key] = {
+      enabled: true,
+      displayName: family.displayName,
+      models: familyModels,
+    };
+  }
+
+  return hasAny ? { models } : null;
+}
+
+function loadConfigFromFile(): AppConfig | null {
+  const configPath = path.resolve(process.cwd(), "config.json");
+  if (!fs.existsSync(configPath)) return null;
+
+  const raw = fs.readFileSync(configPath, "utf-8");
+  return JSON.parse(raw) as AppConfig;
+}
+
 export function loadConfig(): AppConfig {
   if (cachedConfig) return cachedConfig;
 
-  const configPath = path.resolve(process.cwd(), "config.json");
+  const envConfig = loadConfigFromEnv();
+  const fileConfig = loadConfigFromFile();
 
-  if (!fs.existsSync(configPath)) {
-    throw new Error(
-      "config.json not found. Copy config.example.json to config.json and fill in your Azure endpoints."
-    );
+  if (!envConfig && !fileConfig) {
+    cachedConfig = { models: {} };
+    return cachedConfig;
   }
 
-  const raw = fs.readFileSync(configPath, "utf-8");
-  const config: AppConfig = JSON.parse(raw);
-  cachedConfig = config;
-  return config;
+  if (!envConfig) {
+    cachedConfig = fileConfig!;
+    return cachedConfig;
+  }
+
+  if (!fileConfig) {
+    cachedConfig = envConfig;
+    return cachedConfig;
+  }
+
+  // Both exist: config.json wins per-family
+  const merged: AppConfig = { models: {} };
+  const allKeys = new Set([
+    ...Object.keys(envConfig.models),
+    ...Object.keys(fileConfig.models),
+  ]);
+
+  for (const key of allKeys) {
+    const k = key as keyof AppConfig["models"];
+    merged.models[k] = fileConfig.models[k] ?? envConfig.models[k];
+  }
+
+  cachedConfig = merged;
+  return cachedConfig;
 }
 
 export function getModelConfig(modelId: string): ModelConfig | null {

@@ -7,17 +7,33 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/components/layout/LanguageProvider";
+import { useConfig, isModelFamilyAvailable } from "@/hooks/useConfig";
+import type { SanitizedAppConfig } from "@/types/config";
+
+const NAV_FAMILY_MAP: Record<string, keyof SanitizedAppConfig["models"]> = {
+  "/image/gpt": "gpt-image",
+  "/image/flux": "flux-image",
+  "/audio/tts": "tts",
+};
 
 export function Navbar() {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const { locale, setLocale, t } = useLanguage();
+  const { config } = useConfig();
 
-  const navLinks = [
+  const allNavLinks = [
     { href: "/image/gpt", label: t("nav.gptImage") },
     { href: "/image/flux", label: t("nav.fluxImage") },
     { href: "/audio/tts", label: t("nav.tts") },
   ];
+
+  const navLinks = config
+    ? allNavLinks.filter((link) => {
+        const familyKey = NAV_FAMILY_MAP[link.href];
+        return familyKey ? isModelFamilyAvailable(config, familyKey) : true;
+      })
+    : [];
 
   return (
     <nav className="border-b border-border/60 bg-background/80 backdrop-blur-sm">
