@@ -12,7 +12,6 @@ export async function POST(request: NextRequest) {
       prompt,
       width = 1024,
       height = 1024,
-      n = 1,
     } = body;
     requestModelId = modelId ?? "unknown";
 
@@ -43,7 +42,6 @@ export async function POST(request: NextRequest) {
       prompt,
       width,
       height,
-      n: Math.max(1, Math.min(n, 10)),
       model: modelConfig.id,
     };
 
@@ -81,11 +79,11 @@ export async function POST(request: NextRequest) {
       prompt,
       width: String(width),
       height: String(height),
-      imageCount: String(requestBody.n),
+      imageCount: "1",
     }, {
       durationMs,
       promptLength: prompt.length,
-      imageCount: requestBody.n as number,
+      imageCount: 1,
     });
 
     if (!result.data || result.data.length === 0) {

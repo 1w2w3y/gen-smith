@@ -18,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from "@/components/layout/LanguageProvider";
 import {
@@ -94,7 +93,6 @@ export function FluxGenerationForm({
   const { t } = useLanguage();
   const [modelId, setModelId] = React.useState(defaultValues?.modelId ?? models[0]?.id ?? "");
   const [prompt, setPrompt] = React.useState(defaultValues?.prompt ?? "");
-  const [n, setN] = React.useState([defaultValues?.n ?? 1]);
   const [dimensionPreset, setDimensionPreset] =
     React.useState<DimensionPreset>(toDimensionPreset(defaultValues?.width, defaultValues?.height));
 
@@ -104,7 +102,7 @@ export function FluxGenerationForm({
     onSubmit({
       modelId,
       prompt,
-      n: n[0],
+      n: 1,
       width: preset.width,
       height: preset.height,
     });
@@ -148,11 +146,6 @@ export function FluxGenerationForm({
               disabled={isLoading}
               className="min-h-[80px]"
             />
-          </div>
-
-          <div className="space-y-2">
-            <Label>{t("common.numImages")}: {n[0]}</Label>
-            <Slider min={1} max={4} step={1} value={n} onValueChange={setN} disabled={isLoading} />
           </div>
 
           <div className="space-y-3">

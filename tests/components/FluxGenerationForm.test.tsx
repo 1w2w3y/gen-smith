@@ -22,7 +22,6 @@ describe("FluxGenerationForm", () => {
     expect(screen.getByText("FLUX Image Generation")).toBeInTheDocument();
     expect(screen.getByText("Model")).toBeInTheDocument();
     expect(screen.getByText("Prompt")).toBeInTheDocument();
-    expect(screen.getByText(/Number of images/)).toBeInTheDocument();
     expect(screen.getByText("Dimensions")).toBeInTheDocument();
   });
 
