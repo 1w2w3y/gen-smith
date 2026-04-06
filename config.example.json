@@ -40,9 +40,21 @@
       ]
     },
     "mai-image": {
-      "enabled": false,
+      "enabled": true,
       "displayName": "MAI Image",
-      "models": []
+      "models": [
+        {
+          "id": "MAI-Image-2",
+          "displayName": "MAI Image 2",
+          "endpoint": "https://<resource>.services.ai.azure.com",
+          "deploymentName": "MAI-Image-2",
+          "apiVersion": "",
+          "auth": {
+            "type": "apiKey",
+            "apiKey": "your-api-key-here"
+          }
+        }
+      ]
     },
     "flux-image": {
       "enabled": true,

@@ -1,6 +1,7 @@
 const en = {
   // Nav
   "nav.gptImage": "GPT Image",
+  "nav.maiImage": "MAI Image",
   "nav.fluxImage": "FLUX Image",
   "nav.tts": "TTS",
   "nav.toggleTheme": "Toggle theme",
@@ -11,6 +12,8 @@ const en = {
   "home.subtitle": "Playground for generative AI models on Azure AI Foundry",
   "home.gptImage.title": "GPT Image",
   "home.gptImage.desc": "Generate images with GPT Image models",
+  "home.maiImage.title": "MAI Image",
+  "home.maiImage.desc": "Generate images with MAI Image models",
   "home.fluxImage.title": "FLUX Image",
   "home.fluxImage.desc": "Generate images with FLUX models",
   "home.tts.title": "Text to Speech",
@@ -53,6 +56,16 @@ const en = {
   "gptImage.moderation": "Moderation",
   "gptImage.moderation.auto": "Auto",
   "gptImage.moderation.low": "Low",
+
+  // MAI Image
+  "maiImage.title": "MAI Image Generation",
+  "maiImage.desc": "Configure parameters and generate images with MAI Image models",
+  "maiImage.configError": "No MAI Image models configured. Set GEN_SMITH_MAI_IMAGE_ENDPOINT or add models to config.json.",
+  "maiImage.dimensions": "Dimensions",
+  "maiImage.dim.square": "1024x1024 (Square)",
+  "maiImage.dim.landscape": "1365x768 (Landscape)",
+  "maiImage.dim.portrait": "768x1365 (Portrait)",
+  "maiImage.dim.small": "768x768 (Small)",
 
   // FLUX
   "flux.title": "FLUX Image Generation",

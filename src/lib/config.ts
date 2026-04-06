@@ -26,6 +26,13 @@ const ENV_FAMILIES = [
     defaultApiVersion: "preview",
   },
   {
+    key: "mai-image" as const,
+    prefix: "GEN_SMITH_MAI_IMAGE",
+    displayName: "MAI Image",
+    defaultDeployments: ["MAI-Image-2"],
+    defaultApiVersion: "",
+  },
+  {
     key: "tts" as const,
     prefix: "GEN_SMITH_TTS",
     displayName: "Text to Speech",

@@ -1,7 +1,7 @@
 import type { TTSVoice, TTSFormat } from "./tts";
 import type { ImageSize, ImageQuality, OutputFormat, Background, Moderation } from "./image";
 
-export type PlaygroundType = "gpt-image" | "flux-image" | "tts";
+export type PlaygroundType = "gpt-image" | "mai-image" | "flux-image" | "tts";
 
 interface HistoryEntryBase {
   id: string;
@@ -39,6 +39,19 @@ export interface FluxImageHistoryEntry extends HistoryEntryBase {
   imageCount: number;
 }
 
+export interface MaiImageHistoryEntry extends HistoryEntryBase {
+  playground: "mai-image";
+  params: {
+    modelId: string;
+    prompt: string;
+    n: number;
+    width: number;
+    height: number;
+  };
+  thumbnails: string[];
+  imageCount: number;
+}
+
 export interface TTSHistoryEntry extends HistoryEntryBase {
   playground: "tts";
   params: {
@@ -53,6 +66,7 @@ export interface TTSHistoryEntry extends HistoryEntryBase {
 
 export type HistoryEntry =
   | GptImageHistoryEntry
+  | MaiImageHistoryEntry
   | FluxImageHistoryEntry
   | TTSHistoryEntry;
 

@@ -1,6 +1,7 @@
 const zh = {
   // Nav
   "nav.gptImage": "GPT 图像",
+  "nav.maiImage": "MAI 图像",
   "nav.fluxImage": "FLUX 图像",
   "nav.tts": "语音合成",
   "nav.toggleTheme": "切换主题",
@@ -11,6 +12,8 @@ const zh = {
   "home.subtitle": "Azure AI Foundry 生成式 AI 模型试验场",
   "home.gptImage.title": "GPT 图像",
   "home.gptImage.desc": "使用 GPT Image 模型生成图像",
+  "home.maiImage.title": "MAI 图像",
+  "home.maiImage.desc": "使用 MAI Image 模型生成图像",
   "home.fluxImage.title": "FLUX 图像",
   "home.fluxImage.desc": "使用 FLUX 模型生成图像",
   "home.tts.title": "语音合成",
@@ -53,6 +56,16 @@ const zh = {
   "gptImage.moderation": "内容审核",
   "gptImage.moderation.auto": "自动",
   "gptImage.moderation.low": "低",
+
+  // MAI Image
+  "maiImage.title": "MAI 图像生成",
+  "maiImage.desc": "配置参数并使用 MAI Image 模型生成图像",
+  "maiImage.configError": "未配置 MAI Image 模型。请设置 GEN_SMITH_MAI_IMAGE_ENDPOINT 或在 config.json 中添加。",
+  "maiImage.dimensions": "尺寸",
+  "maiImage.dim.square": "1024x1024 (正方形)",
+  "maiImage.dim.landscape": "1365x768 (横向)",
+  "maiImage.dim.portrait": "768x1365 (纵向)",
+  "maiImage.dim.small": "768x768 (小尺寸)",
 
   // FLUX
   "flux.title": "FLUX 图像生成",

@@ -12,6 +12,7 @@ import type { SanitizedAppConfig } from "@/types/config";
 
 const NAV_FAMILY_MAP: Record<string, keyof SanitizedAppConfig["models"]> = {
   "/image/gpt": "gpt-image",
+  "/image/mai": "mai-image",
   "/image/flux": "flux-image",
   "/audio/tts": "tts",
 };
@@ -24,6 +25,7 @@ export function Navbar() {
 
   const allNavLinks = [
     { href: "/image/gpt", label: t("nav.gptImage") },
+    { href: "/image/mai", label: t("nav.maiImage") },
     { href: "/image/flux", label: t("nav.fluxImage") },
     { href: "/audio/tts", label: t("nav.tts") },
   ];
