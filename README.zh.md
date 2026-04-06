@@ -7,6 +7,7 @@
 ## 功能特性
 
 - **GPT 图像试验场** —— 使用 gpt-image-1.5、gpt-image-1 和 gpt-image-1-mini 生成图像，支持完整的参数控制（尺寸、质量、背景、格式、内容审核）
+- **MAI 图像试验场** —— 通过 Azure AI Foundry 使用 MAI-Image-2 生成图像，支持可配置尺寸（正方形、横向、纵向、小尺寸）
 - **FLUX 图像试验场** —— 通过 Azure AI Foundry 无服务器端点，使用 FLUX.2-pro 和 FLUX.2-flex 生成图像
 - **文字转语音试验场** —— 使用 gpt-4o-mini-tts 将文字转换为语音，提供 6 种声音选择、语速控制和风格指令
 - **双栏布局** —— 左侧配置表单，右侧输出结果
@@ -23,6 +24,10 @@
 
 ![GPT 图像试验场](docs/screenshots/gpt-image.png)
 
+### MAI 图像试验场
+
+![MAI 图像试验场](docs/screenshots/mai-image.png)
+
 ### FLUX 图像试验场
 
 ![FLUX 图像试验场](docs/screenshots/flux-image.png)
@@ -36,6 +41,7 @@
 | 类别     | 页面       | 模型                                          | API 类型                     |
 |----------|------------|-----------------------------------------------|------------------------------|
 | 图像生成 | GPT Image  | gpt-image-1.5, gpt-image-1, gpt-image-1-mini | OpenAI SDK (images/generations) |
+| 图像生成 | MAI Image  | MAI-Image-2                                   | Azure AI Foundry 无服务器    |
 | 图像生成 | FLUX Image | FLUX.2-pro, FLUX.2-flex                       | Azure AI Foundry 无服务器    |
 | 音频生成 | TTS        | gpt-4o-mini-tts                               | Azure 认知服务               |
 
@@ -143,6 +149,10 @@ docker run -p 3000:3000 \
 | `GEN_SMITH_GPT_IMAGE_CLIENT_ID` | 托管标识的客户端 ID |
 | `GEN_SMITH_GPT_IMAGE_DEPLOYMENTS` | 逗号分隔的部署名称（默认：`gpt-image-1`） |
 | `GEN_SMITH_GPT_IMAGE_API_VERSION` | API 版本（默认：`2024-10-21`） |
+| `GEN_SMITH_MAI_IMAGE_ENDPOINT` | Azure AI Foundry 端点 |
+| `GEN_SMITH_MAI_IMAGE_API_KEY` | API 密钥 |
+| `GEN_SMITH_MAI_IMAGE_AUTH_TYPE` | `apiKey`（默认）、`azureCli` 或 `managedIdentity` |
+| `GEN_SMITH_MAI_IMAGE_DEPLOYMENTS` | 逗号分隔的部署名称（默认：`MAI-Image-2`） |
 | `GEN_SMITH_FLUX_IMAGE_ENDPOINT` | Azure AI Foundry 端点 |
 | `GEN_SMITH_FLUX_IMAGE_API_KEY` | API 密钥 |
 | `GEN_SMITH_FLUX_IMAGE_DEPLOYMENTS` | 逗号分隔（默认：`FLUX.2-pro:flux-2-pro`） |
@@ -164,19 +174,21 @@ docker run -p 3000:3000 -v ./config.json:/app/config.json ghcr.io/1w2w3y/gen-smi
 src/
   app/
     image/gpt/        GPT 图像试验场页面
+    image/mai/        MAI 图像试验场页面
     image/flux/        FLUX 图像试验场页面
     audio/tts/         文字转语音试验场页面
     api/
       image/generate/  GPT 图像 API 路由（OpenAI SDK）
+      image/mai/       MAI 图像 API 路由（直接 REST）
       image/flux/      FLUX 图像 API 路由（直接 REST）
       audio/tts/       TTS API 路由（直接 REST）
       config/          脱敏配置端点
   components/
-    image/             GenerationForm, FluxGenerationForm, ImageOutput
+    image/             GenerationForm, MaiImageGenerationForm, FluxGenerationForm, ImageOutput
     audio/             TTSForm, AudioOutput
     layout/            Navbar, ThemeProvider, LanguageProvider
     ui/                shadcn/ui 基础组件
-  hooks/               useGenerateImage, useGenerateFluxImage, useGenerateSpeech
+  hooks/               useGenerateImage, useGenerateMaiImage, useGenerateFluxImage, useGenerateSpeech
   lib/                 配置加载器、认证辅助工具、通用工具
   types/               TypeScript 类型定义
 config.example.json    模板配置（已提交）
