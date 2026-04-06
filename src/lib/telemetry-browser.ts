@@ -14,6 +14,7 @@ if (typeof window !== "undefined") {
       enableAutoRouteTracking: true,
       disableFetchTracking: false,
       disableAjaxTracking: false,
+      samplingPercentage: 100,
     },
   });
   appInsights.loadAppInsights();

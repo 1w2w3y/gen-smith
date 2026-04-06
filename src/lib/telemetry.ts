@@ -13,6 +13,7 @@ appInsights
   .start();
 
 const client = appInsights.defaultClient;
+client.config.samplingPercentage = 100;
 client.context.tags[client.context.keys.cloudRole] = "gen-smith";
 
 export function trackGeneration(
