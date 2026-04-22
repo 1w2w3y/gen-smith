@@ -5,6 +5,17 @@
       "displayName": "GPT Image",
       "models": [
         {
+          "id": "gpt-image-2",
+          "displayName": "GPT Image 2",
+          "endpoint": "https://<resource>.openai.azure.com",
+          "deploymentName": "gpt-image-2",
+          "apiVersion": "2024-10-21",
+          "auth": {
+            "type": "apiKey",
+            "apiKey": "your-api-key-here"
+          }
+        },
+        {
           "id": "gpt-image-1.5",
           "displayName": "GPT Image 1.5",
           "endpoint": "https://<resource>.openai.azure.com",

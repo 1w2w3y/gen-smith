@@ -6,7 +6,7 @@ A lightweight playground for generative AI models — connect to Azure AI Foundr
 
 ## Features
 
-- **GPT Image playground** — Generate images with gpt-image-1.5, gpt-image-1, and gpt-image-1-mini with full parameter control (size, quality, background, format, moderation)
+- **GPT Image playground** — Generate images with gpt-image-2, gpt-image-1.5, gpt-image-1, and gpt-image-1-mini with full parameter control (size, quality, background, format, moderation)
 - **MAI Image playground** — Generate images with MAI-Image-2 via Azure AI Foundry with configurable dimensions (square, landscape, portrait, small)
 - **FLUX Image playground** — Generate images with FLUX.2-pro and FLUX.2-flex via Azure AI Foundry serverless endpoints
 - **Text-to-Speech playground** — Convert text to speech with gpt-4o-mini-tts, 6 voice options, speed control, and style instructions
@@ -40,7 +40,7 @@ A lightweight playground for generative AI models — connect to Azure AI Foundr
 
 | Category  | Page       | Models                                        | API Type                     |
 |-----------|------------|-----------------------------------------------|------------------------------|
-| Image Gen | GPT Image  | gpt-image-1.5, gpt-image-1, gpt-image-1-mini | OpenAI SDK (images/generations) |
+| Image Gen | GPT Image  | gpt-image-2, gpt-image-1.5, gpt-image-1, gpt-image-1-mini | OpenAI SDK (images/generations) |
 | Image Gen | MAI Image  | MAI-Image-2                                   | Azure AI Foundry serverless  |
 | Image Gen | FLUX Image | FLUX.2-pro, FLUX.2-flex                       | Azure AI Foundry serverless  |
 | Audio Gen | TTS        | gpt-4o-mini-tts                               | Azure Cognitive Services     |
@@ -133,7 +133,7 @@ docker run -p 3000:3000 \
   -e GEN_SMITH_GPT_IMAGE_ENDPOINT=https://your-resource.openai.azure.com \
   -e GEN_SMITH_GPT_IMAGE_AUTH_TYPE=managedIdentity \
   -e GEN_SMITH_GPT_IMAGE_CLIENT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
-  -e GEN_SMITH_GPT_IMAGE_DEPLOYMENTS=gpt-image-1 \
+  -e GEN_SMITH_GPT_IMAGE_DEPLOYMENTS=gpt-image-2 \
   ghcr.io/1w2w3y/gen-smith:latest
 ```
 
@@ -147,7 +147,7 @@ Each model family is configured with a `GEN_SMITH_<FAMILY>_` prefix. Set the `_E
 | `GEN_SMITH_GPT_IMAGE_API_KEY` | API key (if using `apiKey` auth) |
 | `GEN_SMITH_GPT_IMAGE_AUTH_TYPE` | `apiKey` (default), `azureCli`, or `managedIdentity` |
 | `GEN_SMITH_GPT_IMAGE_CLIENT_ID` | Client ID for managed identity |
-| `GEN_SMITH_GPT_IMAGE_DEPLOYMENTS` | Comma-separated deployment names (default: `gpt-image-1`) |
+| `GEN_SMITH_GPT_IMAGE_DEPLOYMENTS` | Comma-separated deployment names (default: `gpt-image-2`) |
 | `GEN_SMITH_GPT_IMAGE_API_VERSION` | API version (default: `2024-10-21`) |
 | `GEN_SMITH_MAI_IMAGE_ENDPOINT` | Azure AI Foundry endpoint |
 | `GEN_SMITH_MAI_IMAGE_API_KEY` | API key |

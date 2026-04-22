@@ -15,7 +15,7 @@ const ENV_FAMILIES = [
     key: "gpt-image" as const,
     prefix: "GEN_SMITH_GPT_IMAGE",
     displayName: "GPT Image",
-    defaultDeployments: ["gpt-image-1"],
+    defaultDeployments: ["gpt-image-2"],
     defaultApiVersion: "2024-10-21",
   },
   {

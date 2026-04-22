@@ -6,7 +6,7 @@
 
 ## 功能特性
 
-- **GPT 图像试验场** —— 使用 gpt-image-1.5、gpt-image-1 和 gpt-image-1-mini 生成图像，支持完整的参数控制（尺寸、质量、背景、格式、内容审核）
+- **GPT 图像试验场** —— 使用 gpt-image-2、gpt-image-1.5、gpt-image-1 和 gpt-image-1-mini 生成图像，支持完整的参数控制（尺寸、质量、背景、格式、内容审核）
 - **MAI 图像试验场** —— 通过 Azure AI Foundry 使用 MAI-Image-2 生成图像，支持可配置尺寸（正方形、横向、纵向、小尺寸）
 - **FLUX 图像试验场** —— 通过 Azure AI Foundry 无服务器端点，使用 FLUX.2-pro 和 FLUX.2-flex 生成图像
 - **文字转语音试验场** —— 使用 gpt-4o-mini-tts 将文字转换为语音，提供 6 种声音选择、语速控制和风格指令
@@ -40,7 +40,7 @@
 
 | 类别     | 页面       | 模型                                          | API 类型                     |
 |----------|------------|-----------------------------------------------|------------------------------|
-| 图像生成 | GPT Image  | gpt-image-1.5, gpt-image-1, gpt-image-1-mini | OpenAI SDK (images/generations) |
+| 图像生成 | GPT Image  | gpt-image-2, gpt-image-1.5, gpt-image-1, gpt-image-1-mini | OpenAI SDK (images/generations) |
 | 图像生成 | MAI Image  | MAI-Image-2                                   | Azure AI Foundry 无服务器    |
 | 图像生成 | FLUX Image | FLUX.2-pro, FLUX.2-flex                       | Azure AI Foundry 无服务器    |
 | 音频生成 | TTS        | gpt-4o-mini-tts                               | Azure 认知服务               |
@@ -133,7 +133,7 @@ docker run -p 3000:3000 \
   -e GEN_SMITH_GPT_IMAGE_ENDPOINT=https://your-resource.openai.azure.com \
   -e GEN_SMITH_GPT_IMAGE_AUTH_TYPE=managedIdentity \
   -e GEN_SMITH_GPT_IMAGE_CLIENT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
-  -e GEN_SMITH_GPT_IMAGE_DEPLOYMENTS=gpt-image-1 \
+  -e GEN_SMITH_GPT_IMAGE_DEPLOYMENTS=gpt-image-2 \
   ghcr.io/1w2w3y/gen-smith:latest
 ```
 
@@ -147,7 +147,7 @@ docker run -p 3000:3000 \
 | `GEN_SMITH_GPT_IMAGE_API_KEY` | API 密钥（使用 `apiKey` 认证时） |
 | `GEN_SMITH_GPT_IMAGE_AUTH_TYPE` | `apiKey`（默认）、`azureCli` 或 `managedIdentity` |
 | `GEN_SMITH_GPT_IMAGE_CLIENT_ID` | 托管标识的客户端 ID |
-| `GEN_SMITH_GPT_IMAGE_DEPLOYMENTS` | 逗号分隔的部署名称（默认：`gpt-image-1`） |
+| `GEN_SMITH_GPT_IMAGE_DEPLOYMENTS` | 逗号分隔的部署名称（默认：`gpt-image-2`） |
 | `GEN_SMITH_GPT_IMAGE_API_VERSION` | API 版本（默认：`2024-10-21`） |
 | `GEN_SMITH_MAI_IMAGE_ENDPOINT` | Azure AI Foundry 端点 |
 | `GEN_SMITH_MAI_IMAGE_API_KEY` | API 密钥 |

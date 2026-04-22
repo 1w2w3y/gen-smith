@@ -40,7 +40,7 @@ Developers and AI practitioners who have deployed generative AI models on Azure 
 ### P0 — Must Have (MVP)
 
 - **GPT Image playground page**
-  - Model selector: gpt-image-1.5, gpt-image-1, gpt-image-1-mini
+  - Model selector: gpt-image-2, gpt-image-1.5, gpt-image-1, gpt-image-1-mini
   - Prompt textarea
   - Image count (1–10)
   - Size presets (Auto, 1024x1024, 1536x1024, 1024x1536)
@@ -90,6 +90,7 @@ Developers and AI practitioners who have deployed generative AI models on Azure 
 
 | Model             | Page       | Provider             | API Type             | Key Parameters                                                                     |
 |-------------------|------------|----------------------|----------------------|------------------------------------------------------------------------------------|
+| gpt-image-2       | GPT Image  | Azure OpenAI         | images/generations   | prompt, n, size, quality, output_format, output_compression, background, moderation |
 | gpt-image-1.5     | GPT Image  | Azure OpenAI         | images/generations   | prompt, n, size, quality, output_format, output_compression, background, moderation |
 | gpt-image-1       | GPT Image  | Azure OpenAI         | images/generations   | prompt, n, size, quality, output_format, output_compression, background, moderation |
 | gpt-image-1-mini  | GPT Image  | Azure OpenAI         | images/generations   | prompt, n, size, quality, output_format, output_compression, background, moderation |
@@ -189,7 +190,7 @@ Rules:
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| GPT Image playground | Done | gpt-image-1.5, gpt-image-1, gpt-image-1-mini via OpenAI SDK |
+| GPT Image playground | Done | gpt-image-2, gpt-image-1.5, gpt-image-1, gpt-image-1-mini via OpenAI SDK |
 | FLUX Image playground | Done | FLUX.2-pro, FLUX.2-flex via Azure AI Foundry serverless endpoints |
 | TTS playground | Done | gpt-4o-mini-tts via Azure Cognitive Services deployment endpoint |
 | API key auth | Done | Per-model API key support |

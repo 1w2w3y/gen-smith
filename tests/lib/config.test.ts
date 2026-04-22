@@ -137,7 +137,7 @@ describe("config", () => {
       const config = loadConfig();
 
       expect(config.models["gpt-image"]!.models).toHaveLength(1);
-      expect(config.models["gpt-image"]!.models[0].id).toBe("gpt-image-1");
+      expect(config.models["gpt-image"]!.models[0].id).toBe("gpt-image-2");
     });
 
     it("uses default API version when not set", async () => {
