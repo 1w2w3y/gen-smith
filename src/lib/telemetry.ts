@@ -9,12 +9,13 @@ appInsights
   .setAutoCollectDependencies(true)
   .setAutoCollectExceptions(true)
   .setAutoCollectConsole(false)
-  .setAutoCollectPerformance(false, false)
-  .start();
+  .setAutoCollectPerformance(false, false);
 
 const client = appInsights.defaultClient;
 client.config.samplingPercentage = 100;
 client.context.tags[client.context.keys.cloudRole] = "gen-smith";
+
+appInsights.start();
 
 export function trackGeneration(
   name: string,
