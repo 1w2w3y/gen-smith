@@ -57,6 +57,7 @@ export async function POST(request: NextRequest) {
       output_format: outputFormat,
       background,
       moderation,
+      stream: false,
     };
 
     if (
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
 
     const startTime = Date.now();
     const result = await client.images.generate(
-      params as unknown as OpenAI.Images.ImageGenerateParams
+      params as unknown as OpenAI.Images.ImageGenerateParamsNonStreaming
     );
     const durationMs = Date.now() - startTime;
 
