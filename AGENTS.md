@@ -24,6 +24,10 @@ npm run build     # Production build
 npm test          # Run tests (vitest)
 ```
 
+## Browser Preference
+
+When opening or testing the local app in a browser, use Chrome through the Codex Chrome Extension by default. Do not use Safari unless explicitly requested or Chrome extension automation is unavailable.
+
 ## Project Structure
 
 - `src/app/` — Next.js pages and API routes
