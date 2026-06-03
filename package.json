@@ -49,7 +49,8 @@
   },
   "overrides": {
     "postcss": "^8.5.10",
-    "protobufjs": "^8.3.0"
+    "protobufjs": "^8.3.0",
+    "uuid": "^11.1.1"
   },
   "engines": {
     "node": ">=20.0.0"
