@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import type { GeneratedImage } from "@/types/image";
 import { trackClientEvent } from "@/lib/telemetry-browser";
+import { detectBase64ImageFormat } from "@/lib/image-format";
 
 interface UseGenerateFluxImageResult {
   images: (GeneratedImage & { format: string })[] | null;
@@ -56,9 +57,9 @@ export function useGenerateFluxImage(): UseGenerateFluxImageResult {
         if (result.images && result.images.length > 0) {
           setImages(
             result.images.map(
-              (img: { b64_json: string; index: number }) => ({
+              (img: { b64_json: string; index: number; format?: string }) => ({
                 ...img,
-                format: "png",
+                format: img.format ?? detectBase64ImageFormat(img.b64_json),
               })
             )
           );

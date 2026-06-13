@@ -26,16 +26,23 @@ export function useConfig() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (cachedResult) {
-      setConfig(cachedResult);
+    if (config) {
       return;
     }
+    let ignore = false;
     fetchConfig()
-      .then(setConfig)
-      .catch((err) =>
-        setError(err instanceof Error ? err.message : "Failed to load config")
-      );
-  }, []);
+      .then((data) => {
+        if (!ignore) setConfig(data);
+      })
+      .catch((err) => {
+        if (!ignore) {
+          setError(err instanceof Error ? err.message : "Failed to load config");
+        }
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [config]);
 
   return { config, error, isLoading: !config && !error };
 }

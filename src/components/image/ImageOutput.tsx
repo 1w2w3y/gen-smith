@@ -31,13 +31,20 @@ function getGridColsClass(count: number): string {
 
 export function ImageOutput({ images, isLoading }: ImageOutputProps) {
   const { t } = useLanguage();
-  const [viewMode, setViewMode] = React.useState<"grid" | number>("grid");
-
-  React.useEffect(() => {
-    if (images && images.length > 0) {
-      setViewMode(images.length > 1 ? "grid" : 0);
-    }
-  }, [images]);
+  const [viewState, setViewState] = React.useState<{
+    images: ImageInfo[] | null;
+    viewMode: "grid" | number;
+  }>({ images: null, viewMode: "grid" });
+  const defaultViewMode: "grid" | number =
+    images && images.length > 1 ? "grid" : 0;
+  const viewMode =
+    viewState.images === images ? viewState.viewMode : defaultViewMode;
+  const setViewMode = React.useCallback(
+    (nextViewMode: "grid" | number) => {
+      setViewState({ images, viewMode: nextViewMode });
+    },
+    [images]
+  );
 
   const handleDownload = (img: ImageInfo) => {
     const byteCharacters = atob(img.b64_json);

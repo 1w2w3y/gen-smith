@@ -27,6 +27,9 @@ export default function GptImagePage() {
   const [activeTab, setActiveTab] = React.useState<"output" | "history">("output");
   const [formKey, setFormKey] = React.useState(0);
   const [formDefaults, setFormDefaults] = React.useState<Partial<GenerationFormData> | undefined>();
+  const [viewedImages, setViewedImages] = React.useState<
+    { b64_json: string; index: number; format: string }[] | null
+  >(null);
 
   // Track latest params for history save
   const latestParamsRef = React.useRef<GenerationFormData | null>(null);
@@ -71,6 +74,7 @@ export default function GptImagePage() {
   const handleGenerate = React.useCallback(
     (data: GenerationFormData) => {
       latestParamsRef.current = data;
+      setViewedImages(null);
       setActiveTab("output");
       generate({
         modelId: data.modelId,
@@ -113,15 +117,6 @@ export default function GptImagePage() {
     },
     [history]
   );
-
-  const [viewedImages, setViewedImages] = React.useState<
-    { b64_json: string; index: number; format: string }[] | null
-  >(null);
-
-  // Clear viewed images when new generation starts
-  React.useEffect(() => {
-    if (isLoading) setViewedImages(null);
-  }, [isLoading]);
 
   const displayImages = viewedImages ?? images;
 

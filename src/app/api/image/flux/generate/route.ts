@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getModelConfigForFamily } from "@/lib/config";
 import { getAuthHeaders } from "@/lib/auth";
 import { trackGeneration, trackException } from "@/lib/telemetry";
+import { detectBase64ImageFormat } from "@/lib/image-format";
 
 export async function POST(request: NextRequest) {
   let requestModelId = "unknown";
@@ -96,6 +97,7 @@ export async function POST(request: NextRequest) {
       (img: { b64_json?: string }, index: number) => ({
         b64_json: img.b64_json ?? "",
         index,
+        format: detectBase64ImageFormat(img.b64_json ?? ""),
       })
     );
 

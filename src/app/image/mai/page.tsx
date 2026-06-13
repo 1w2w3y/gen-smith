@@ -27,6 +27,9 @@ export default function MaiImagePage() {
   const [activeTab, setActiveTab] = React.useState<"output" | "history">("output");
   const [formKey, setFormKey] = React.useState(0);
   const [formDefaults, setFormDefaults] = React.useState<Partial<MaiImageGenerationFormData> | undefined>();
+  const [viewedImages, setViewedImages] = React.useState<
+    { b64_json: string; index: number; format: string }[] | null
+  >(null);
 
   const latestParamsRef = React.useRef<MaiImageGenerationFormData | null>(null);
   const prevLoadingRef = React.useRef(false);
@@ -70,6 +73,7 @@ export default function MaiImagePage() {
   const handleGenerate = React.useCallback(
     (data: MaiImageGenerationFormData) => {
       latestParamsRef.current = data;
+      setViewedImages(null);
       setActiveTab("output");
       generate({
         modelId: data.modelId,
@@ -104,14 +108,6 @@ export default function MaiImagePage() {
     },
     [history]
   );
-
-  const [viewedImages, setViewedImages] = React.useState<
-    { b64_json: string; index: number; format: string }[] | null
-  >(null);
-
-  React.useEffect(() => {
-    if (isLoading) setViewedImages(null);
-  }, [isLoading]);
 
   const displayImages = viewedImages ?? images;
 

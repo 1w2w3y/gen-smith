@@ -3,9 +3,9 @@
 import {
   createContext,
   useContext,
-  useState,
   useEffect,
   useCallback,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import { type Locale, type TranslationKey, getTranslation } from "@/i18n";
@@ -19,6 +19,7 @@ interface LanguageContextValue {
 const LanguageContext = createContext<LanguageContextValue | undefined>(
   undefined
 );
+const localeListeners = new Set<() => void>();
 
 function detectLocale(): Locale {
   // Check localStorage first
@@ -33,19 +34,30 @@ function detectLocale(): Locale {
   return "en";
 }
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("en");
-  const [mounted, setMounted] = useState(false);
+function subscribeToLocale(callback: () => void) {
+  localeListeners.add(callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    localeListeners.delete(callback);
+    window.removeEventListener("storage", callback);
+  };
+}
 
-  useEffect(() => {
-    setLocaleState(detectLocale());
-    setMounted(true);
-  }, []);
+function getServerLocale(): Locale {
+  return "en";
+}
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const locale = useSyncExternalStore(
+    subscribeToLocale,
+    detectLocale,
+    getServerLocale
+  );
 
   const setLocale = useCallback((newLocale: Locale) => {
-    setLocaleState(newLocale);
     localStorage.setItem("locale", newLocale);
     document.documentElement.lang = newLocale;
+    localeListeners.forEach((listener) => listener());
   }, []);
 
   const t = useCallback(
@@ -53,14 +65,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     [locale]
   );
 
-  // Avoid hydration mismatch by rendering children only after mount
-  if (!mounted) {
-    return (
-      <LanguageContext.Provider value={{ locale: "en", setLocale, t: getTranslation("en") }}>
-        {children}
-      </LanguageContext.Provider>
-    );
-  }
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   return (
     <LanguageContext.Provider value={{ locale, setLocale, t }}>

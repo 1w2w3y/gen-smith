@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from "@/components/layout/LanguageProvider";
 import { useConfig } from "@/hooks/useConfig";
+import { detectBase64ImageFormat } from "@/lib/image-format";
 import { cn } from "@/lib/utils";
 import type {
   SanitizedAppConfig,
@@ -88,7 +89,7 @@ async function postJson(path: string, body: Record<string, unknown>) {
     throw new Error("No images returned from API");
   }
 
-  return result.images as { b64_json: string; index: number }[];
+  return result.images as { b64_json: string; index: number; format?: string }[];
 }
 
 async function generateForModel(model: BatchModel, prompt: string) {
@@ -119,7 +120,10 @@ async function generateForModel(model: BatchModel, prompt: string) {
     height: 1024,
   });
 
-  return images.map((img) => ({ ...img, format: "png" }));
+  return images.map((img) => ({
+    ...img,
+    format: img.format ?? detectBase64ImageFormat(img.b64_json),
+  }));
 }
 
 export function BatchImageGenerationPage() {
