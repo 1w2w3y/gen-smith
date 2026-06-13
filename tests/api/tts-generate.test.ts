@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("@/lib/config", () => ({
-  getModelConfig: vi.fn(),
+  getModelConfigForFamily: vi.fn(),
 }));
 
 vi.mock("@/lib/auth", () => ({
-  getApiKey: vi.fn(),
+  getAuthHeaders: vi.fn(),
 }));
 
 describe("POST /api/audio/tts/generate", () => {
@@ -46,8 +46,8 @@ describe("POST /api/audio/tts/generate", () => {
   });
 
   it("returns 404 when model is not in config", async () => {
-    const { getModelConfig } = await import("@/lib/config");
-    vi.mocked(getModelConfig).mockReturnValue(null);
+    const { getModelConfigForFamily } = await import("@/lib/config");
+    vi.mocked(getModelConfigForFamily).mockReturnValue(null);
 
     const { POST } = await import("@/app/api/audio/tts/generate/route");
 
@@ -68,18 +68,20 @@ describe("POST /api/audio/tts/generate", () => {
     vi.resetModules();
 
     vi.doMock("@/lib/config", () => ({
-      getModelConfig: vi.fn().mockReturnValue({
+      getModelConfigForFamily: vi.fn().mockReturnValue({
         id: "gpt-4o-mini-tts",
         displayName: "GPT-4o Mini TTS",
         endpoint: "https://test.cognitiveservices.azure.com",
         deploymentName: "gpt-4o-mini-tts",
         apiVersion: "2025-03-01-preview",
-        auth: { type: "azureCli" },
+        auth: { type: "apiKey", apiKey: "test-api-key" },
       }),
     }));
 
     vi.doMock("@/lib/auth", () => ({
-      getApiKey: vi.fn().mockResolvedValue("mock-token"),
+      getAuthHeaders: vi.fn().mockResolvedValue({
+        "api-key": "test-api-key",
+      }),
     }));
 
     // Mock fetch to return audio binary
@@ -116,7 +118,7 @@ describe("POST /api/audio/tts/generate", () => {
       expect.objectContaining({
         method: "POST",
         headers: expect.objectContaining({
-          Authorization: "Bearer mock-token",
+          "api-key": "test-api-key",
         }),
       })
     );

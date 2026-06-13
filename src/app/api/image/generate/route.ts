@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getModelConfig } from "@/lib/config";
+import { getModelConfigForFamily } from "@/lib/config";
 import { getApiKey } from "@/lib/auth";
 import { trackGeneration, trackException } from "@/lib/telemetry";
 import OpenAI from "openai";
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const modelConfig = getModelConfig(modelId);
+    const modelConfig = getModelConfigForFamily("gpt-image", modelId);
     if (!modelConfig) {
       return NextResponse.json(
         { error: { code: "not_found", message: `Model ${modelId} not found in config` } },
@@ -78,7 +78,6 @@ export async function POST(request: NextRequest) {
     trackGeneration("ImageGeneration", {
       modelId,
       deploymentName: modelConfig.deploymentName,
-      prompt,
       size,
       quality,
       outputFormat,

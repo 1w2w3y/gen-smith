@@ -8,6 +8,7 @@ import type {
   HistoryEntry,
   GptImageHistoryEntry,
   FluxImageHistoryEntry,
+  MaiImageHistoryEntry,
   TTSHistoryEntry,
 } from "@/types/history";
 
@@ -34,8 +35,12 @@ function timeAgo(ts: number, t: (key: TranslationKey) => string): string {
 
 function isImageEntry(
   entry: HistoryEntry
-): entry is GptImageHistoryEntry | FluxImageHistoryEntry {
-  return entry.playground === "gpt-image" || entry.playground === "flux-image";
+): entry is GptImageHistoryEntry | FluxImageHistoryEntry | MaiImageHistoryEntry {
+  return (
+    entry.playground === "gpt-image" ||
+    entry.playground === "flux-image" ||
+    entry.playground === "mai-image"
+  );
 }
 
 function ImageHistoryCard({
@@ -45,7 +50,7 @@ function ImageHistoryCard({
   onViewImages,
   t,
 }: {
-  entry: GptImageHistoryEntry | FluxImageHistoryEntry;
+  entry: GptImageHistoryEntry | FluxImageHistoryEntry | MaiImageHistoryEntry;
   onRestore: () => void;
   onDelete: () => void;
   onViewImages?: () => void;

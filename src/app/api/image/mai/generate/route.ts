@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getModelConfig } from "@/lib/config";
-import { getApiKey } from "@/lib/auth";
+import { getModelConfigForFamily } from "@/lib/config";
+import { getAuthHeaders } from "@/lib/auth";
 import { trackGeneration, trackException } from "@/lib/telemetry";
 
 export async function POST(request: NextRequest) {
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const modelConfig = getModelConfig(modelId);
+    const modelConfig = getModelConfigForFamily("mai-image", modelId);
     if (!modelConfig) {
       return NextResponse.json(
         { error: { code: "not_found", message: `Model ${modelId} not found in config` } },
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const apiKeyOrToken = await getApiKey(modelConfig);
+    const authHeaders = await getAuthHeaders(modelConfig, "api-key");
 
     // MAI-Image-2 URL: {endpoint}/mai/v1/images/generations
     const baseEndpoint = modelConfig.endpoint.replace(/\/+$/, "");
@@ -43,17 +43,10 @@ export async function POST(request: NextRequest) {
       height,
     };
 
-    // Auth header differs by auth type:
-    // - apiKey: use "api-key" header
-    // - azureCli/managedIdentity: use "Authorization: Bearer" header
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
+      ...authHeaders,
     };
-    if (modelConfig.auth.type === "apiKey") {
-      headers["api-key"] = apiKeyOrToken;
-    } else {
-      headers["Authorization"] = `Bearer ${apiKeyOrToken}`;
-    }
 
     console.log(`[api/image/mai/generate] Calling MAI-Image-2 at ${url}`);
 
@@ -83,7 +76,6 @@ export async function POST(request: NextRequest) {
     trackGeneration("MaiImageGeneration", {
       modelId,
       deploymentName: modelConfig.deploymentName,
-      prompt,
       width: String(width),
       height: String(height),
       imageCount: "1",

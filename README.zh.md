@@ -162,6 +162,8 @@ docker run -p 3000:3000 \
 
 部署条目支持 `id:deploymentName` 语法，用于模型 ID 与 Azure 部署名称不同的情况（例如 `FLUX.2-pro:flux-2-pro`）。
 
+遥测默认关闭。如需启用 Application Insights，请为服务端事件设置 `APPLICATIONINSIGHTS_CONNECTION_STRING`，为浏览器事件设置 `NEXT_PUBLIC_APPLICATIONINSIGHTS_CONNECTION_STRING`；遥测不会发送 prompt 或 input 正文。
+
 也可以挂载 `config.json` 进行高级配置：
 
 ```bash

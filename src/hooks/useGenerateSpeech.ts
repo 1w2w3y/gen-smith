@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { trackClientEvent } from "@/lib/telemetry-browser";
 
 interface UseGenerateSpeechResult {
@@ -35,6 +35,12 @@ export function useGenerateSpeech(): UseGenerateSpeechResult {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    return () => {
+      if (audioUrl) URL.revokeObjectURL(audioUrl);
+    };
+  }, [audioUrl]);
+
   const generate = useCallback(
     async (params: {
       modelId: string;
@@ -47,8 +53,6 @@ export function useGenerateSpeech(): UseGenerateSpeechResult {
       setIsLoading(true);
       setError(null);
 
-      // Revoke previous audio URL
-      if (audioUrl) URL.revokeObjectURL(audioUrl);
       setAudioUrl(null);
       setFormat(null);
 
@@ -86,14 +90,12 @@ export function useGenerateSpeech(): UseGenerateSpeechResult {
 
         setAudioUrl(url);
         setFormat(fmt);
-        trackClientEvent("ClientTTSGeneration", {
-          modelId: params.modelId,
-          input: params.input,
-          voice: params.voice,
-          speed: params.speed !== undefined ? String(params.speed) : "",
-          responseFormat: params.responseFormat || "mp3",
-          instructions: params.instructions || "",
-        }, {
+          trackClientEvent("ClientTTSGeneration", {
+            modelId: params.modelId,
+            voice: params.voice,
+            speed: params.speed !== undefined ? String(params.speed) : "",
+            responseFormat: params.responseFormat || "mp3",
+          }, {
           durationMs: Date.now() - startTime,
           inputLength: params.input.length,
         });
@@ -113,7 +115,7 @@ export function useGenerateSpeech(): UseGenerateSpeechResult {
         setIsLoading(false);
       }
     },
-    [audioUrl]
+    []
   );
 
   return { audioUrl, format, isLoading, error, generate };

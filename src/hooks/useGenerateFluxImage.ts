@@ -64,7 +64,6 @@ export function useGenerateFluxImage(): UseGenerateFluxImageResult {
           );
           trackClientEvent("ClientFluxImageGeneration", {
             modelId: params.modelId,
-            prompt: params.prompt,
             width: String(params.width),
             height: String(params.height),
             imageCount: String(params.n),

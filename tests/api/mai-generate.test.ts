@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("@/lib/config", () => ({
-  getModelConfig: vi.fn(),
+  getModelConfigForFamily: vi.fn(),
 }));
 
 vi.mock("@/lib/auth", () => ({
-  getApiKey: vi.fn(),
+  getAuthHeaders: vi.fn(),
 }));
 
 describe("POST /api/image/mai/generate", () => {
@@ -46,8 +46,8 @@ describe("POST /api/image/mai/generate", () => {
   });
 
   it("returns 404 when model is not in config", async () => {
-    const { getModelConfig } = await import("@/lib/config");
-    vi.mocked(getModelConfig).mockReturnValue(null);
+    const { getModelConfigForFamily } = await import("@/lib/config");
+    vi.mocked(getModelConfigForFamily).mockReturnValue(null);
 
     const { POST } = await import("@/app/api/image/mai/generate/route");
 
@@ -68,7 +68,7 @@ describe("POST /api/image/mai/generate", () => {
     vi.resetModules();
 
     vi.doMock("@/lib/config", () => ({
-      getModelConfig: vi.fn().mockReturnValue({
+      getModelConfigForFamily: vi.fn().mockReturnValue({
         id: "MAI-Image-2",
         displayName: "MAI Image 2",
         endpoint: "https://test.services.ai.azure.com",
@@ -79,7 +79,9 @@ describe("POST /api/image/mai/generate", () => {
     }));
 
     vi.doMock("@/lib/auth", () => ({
-      getApiKey: vi.fn().mockResolvedValue("test-api-key"),
+      getAuthHeaders: vi.fn().mockResolvedValue({
+        "api-key": "test-api-key",
+      }),
     }));
 
     const mockFetch = vi.fn().mockResolvedValue({
@@ -141,7 +143,7 @@ describe("POST /api/image/mai/generate", () => {
     vi.resetModules();
 
     vi.doMock("@/lib/config", () => ({
-      getModelConfig: vi.fn().mockReturnValue({
+      getModelConfigForFamily: vi.fn().mockReturnValue({
         id: "MAI-Image-2",
         displayName: "MAI Image 2",
         endpoint: "https://test.services.ai.azure.com",
@@ -152,7 +154,9 @@ describe("POST /api/image/mai/generate", () => {
     }));
 
     vi.doMock("@/lib/auth", () => ({
-      getApiKey: vi.fn().mockResolvedValue("mock-bearer-token"),
+      getAuthHeaders: vi.fn().mockResolvedValue({
+        Authorization: "Bearer mock-bearer-token",
+      }),
     }));
 
     const mockFetch = vi.fn().mockResolvedValue({

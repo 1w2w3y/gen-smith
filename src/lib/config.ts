@@ -147,6 +147,17 @@ export function getModelConfig(modelId: string): ModelConfig | null {
   return null;
 }
 
+export function getModelConfigForFamily(
+  familyKey: keyof AppConfig["models"],
+  modelId: string
+): ModelConfig | null {
+  const config = loadConfig();
+  const family = config.models[familyKey];
+  if (!family?.enabled) return null;
+
+  return family.models.find((m) => m.id === modelId) ?? null;
+}
+
 export function getSanitizedConfig(): SanitizedAppConfig {
   const config = loadConfig();
   const sanitized: SanitizedAppConfig = { models: {} };

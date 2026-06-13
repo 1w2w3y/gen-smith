@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock the config module
 vi.mock("@/lib/config", () => ({
-  getModelConfig: vi.fn(),
+  getModelConfigForFamily: vi.fn(),
 }));
 
 describe("POST /api/image/generate", () => {
@@ -43,8 +43,8 @@ describe("POST /api/image/generate", () => {
   });
 
   it("returns 404 when model is not in config", async () => {
-    const { getModelConfig } = await import("@/lib/config");
-    vi.mocked(getModelConfig).mockReturnValue(null);
+    const { getModelConfigForFamily } = await import("@/lib/config");
+    vi.mocked(getModelConfigForFamily).mockReturnValue(null);
 
     const { POST } = await import("@/app/api/image/generate/route");
 
@@ -80,7 +80,7 @@ describe("POST /api/image/generate", () => {
     }));
 
     vi.doMock("@/lib/config", () => ({
-      getModelConfig: vi.fn().mockReturnValue({
+      getModelConfigForFamily: vi.fn().mockReturnValue({
         id: "gpt-image-1",
         displayName: "GPT Image 1",
         endpoint: "https://test.openai.azure.com",
@@ -125,7 +125,7 @@ describe("POST /api/image/generate", () => {
   it("calls OpenAI with correct parameters and returns images", async () => {
     vi.resetModules();
     vi.doMock("@/lib/config", () => ({
-      getModelConfig: vi.fn().mockReturnValue({
+      getModelConfigForFamily: vi.fn().mockReturnValue({
         id: "gpt-image-1-mini",
         displayName: "GPT Image 1 Mini",
         endpoint: "https://test.openai.azure.com",
@@ -182,7 +182,7 @@ describe("POST /api/image/generate", () => {
   it("uses deploymentName (not modelId) as the model parameter to Azure", async () => {
     vi.resetModules();
     vi.doMock("@/lib/config", () => ({
-      getModelConfig: vi.fn().mockReturnValue({
+      getModelConfigForFamily: vi.fn().mockReturnValue({
         id: "my-custom-id",
         displayName: "Custom Model",
         endpoint: "https://test.openai.azure.com",
@@ -226,7 +226,7 @@ describe("POST /api/image/generate", () => {
   it("includes output_compression only for jpeg/webp formats", async () => {
     vi.resetModules();
     vi.doMock("@/lib/config", () => ({
-      getModelConfig: vi.fn().mockReturnValue({
+      getModelConfigForFamily: vi.fn().mockReturnValue({
         id: "gpt-image-1",
         displayName: "GPT Image 1",
         endpoint: "https://test.openai.azure.com",
@@ -270,7 +270,7 @@ describe("POST /api/image/generate", () => {
     mockGen.mockClear();
     vi.resetModules();
     vi.doMock("@/lib/config", () => ({
-      getModelConfig: vi.fn().mockReturnValue({
+      getModelConfigForFamily: vi.fn().mockReturnValue({
         id: "gpt-image-1",
         displayName: "GPT Image 1",
         endpoint: "https://test.openai.azure.com",
@@ -313,7 +313,7 @@ describe("POST /api/image/generate", () => {
   it("clamps n between 1 and 10", async () => {
     vi.resetModules();
     vi.doMock("@/lib/config", () => ({
-      getModelConfig: vi.fn().mockReturnValue({
+      getModelConfigForFamily: vi.fn().mockReturnValue({
         id: "gpt-image-1",
         displayName: "GPT Image 1",
         endpoint: "https://test.openai.azure.com",

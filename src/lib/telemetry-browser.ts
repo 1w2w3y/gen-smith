@@ -3,22 +3,27 @@
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 
 const CONNECTION_STRING =
-  "InstrumentationKey=391f1c77-970f-4431-b3d1-a6e4d006b8fa;IngestionEndpoint=https://westus2-2.in.applicationinsights.azure.com/;LiveEndpoint=https://westus2.livediagnostics.monitor.azure.com/;ApplicationId=02dc2a93-05bf-4a2b-b75f-e7ab15634533";
+  process.env.NEXT_PUBLIC_APPLICATIONINSIGHTS_CONNECTION_STRING;
 
 let appInsights: ApplicationInsights | null = null;
 
-if (typeof window !== "undefined") {
-  appInsights = new ApplicationInsights({
-    config: {
-      connectionString: CONNECTION_STRING,
-      enableAutoRouteTracking: true,
-      disableFetchTracking: false,
-      disableAjaxTracking: false,
-      samplingPercentage: 100,
-    },
-  });
-  appInsights.loadAppInsights();
-  appInsights.trackPageView();
+if (typeof window !== "undefined" && CONNECTION_STRING) {
+  try {
+    appInsights = new ApplicationInsights({
+      config: {
+        connectionString: CONNECTION_STRING,
+        enableAutoRouteTracking: true,
+        disableFetchTracking: false,
+        disableAjaxTracking: false,
+        samplingPercentage: 100,
+      },
+    });
+    appInsights.loadAppInsights();
+    appInsights.trackPageView();
+  } catch (error) {
+    console.warn("[telemetry] Failed to initialize Application Insights", error);
+    appInsights = null;
+  }
 }
 
 export function trackClientEvent(

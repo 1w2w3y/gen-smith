@@ -162,6 +162,8 @@ Each model family is configured with a `GEN_SMITH_<FAMILY>_` prefix. Set the `_E
 
 Deployment entries support `id:deploymentName` syntax when the model ID differs from the Azure deployment name (e.g., `FLUX.2-pro:flux-2-pro`).
 
+Telemetry is off by default. To enable Application Insights, set `APPLICATIONINSIGHTS_CONNECTION_STRING` for server events and `NEXT_PUBLIC_APPLICATIONINSIGHTS_CONNECTION_STRING` for browser events; prompt and input text are not sent in telemetry.
+
 Alternatively, mount a `config.json` for advanced configuration:
 
 ```bash

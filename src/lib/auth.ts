@@ -2,7 +2,10 @@ import type { ModelConfig } from "@/types/config";
 
 export async function getApiKey(modelConfig: ModelConfig): Promise<string> {
   if (modelConfig.auth.type === "apiKey") {
-    return modelConfig.auth.apiKey!;
+    if (!modelConfig.auth.apiKey) {
+      throw new Error(`API key is required for model ${modelConfig.id}`);
+    }
+    return modelConfig.auth.apiKey;
   }
 
   // azureCli or managedIdentity: get a token via @azure/identity
@@ -19,4 +22,17 @@ export async function getApiKey(modelConfig: ModelConfig): Promise<string> {
     "https://cognitiveservices.azure.com/.default"
   );
   return tokenResponse.token;
+}
+
+export async function getAuthHeaders(
+  modelConfig: ModelConfig,
+  apiKeyHeader: "api-key" | "bearer" = "bearer"
+): Promise<Record<string, string>> {
+  const secretOrToken = await getApiKey(modelConfig);
+
+  if (modelConfig.auth.type === "apiKey" && apiKeyHeader === "api-key") {
+    return { "api-key": secretOrToken };
+  }
+
+  return { Authorization: `Bearer ${secretOrToken}` };
 }

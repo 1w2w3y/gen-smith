@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getModelConfig } from "@/lib/config";
-import { getApiKey } from "@/lib/auth";
+import { getModelConfigForFamily } from "@/lib/config";
+import { getAuthHeaders } from "@/lib/auth";
 import { trackGeneration, trackException } from "@/lib/telemetry";
 
 export async function POST(request: NextRequest) {
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const modelConfig = getModelConfig(modelId);
+    const modelConfig = getModelConfigForFamily("flux-image", modelId);
     if (!modelConfig) {
       return NextResponse.json(
         { error: { code: "not_found", message: `Model ${modelId} not found in config` } },
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const apiKey = await getApiKey(modelConfig);
+    const authHeaders = await getAuthHeaders(modelConfig, "bearer");
 
     // FLUX uses Azure AI Foundry serverless endpoint
     // URL format: {endpoint}/providers/blackforestlabs/v1/{slug}?api-version={version}
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        ...authHeaders,
       },
       body: JSON.stringify(requestBody),
     });
@@ -76,7 +76,6 @@ export async function POST(request: NextRequest) {
     trackGeneration("FluxImageGeneration", {
       modelId,
       deploymentName: modelConfig.deploymentName,
-      prompt,
       width: String(width),
       height: String(height),
       imageCount: "1",

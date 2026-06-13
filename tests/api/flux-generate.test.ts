@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("@/lib/config", () => ({
-  getModelConfig: vi.fn(),
+  getModelConfigForFamily: vi.fn(),
 }));
 
 vi.mock("@/lib/auth", () => ({
-  getApiKey: vi.fn(),
+  getAuthHeaders: vi.fn(),
 }));
 
 describe("POST /api/image/flux/generate", () => {
@@ -46,8 +46,8 @@ describe("POST /api/image/flux/generate", () => {
   });
 
   it("returns 404 when model is not in config", async () => {
-    const { getModelConfig } = await import("@/lib/config");
-    vi.mocked(getModelConfig).mockReturnValue(null);
+    const { getModelConfigForFamily } = await import("@/lib/config");
+    vi.mocked(getModelConfigForFamily).mockReturnValue(null);
 
     const { POST } = await import("@/app/api/image/flux/generate/route");
 
@@ -68,7 +68,7 @@ describe("POST /api/image/flux/generate", () => {
     vi.resetModules();
 
     vi.doMock("@/lib/config", () => ({
-      getModelConfig: vi.fn().mockReturnValue({
+      getModelConfigForFamily: vi.fn().mockReturnValue({
         id: "FLUX.2-pro",
         displayName: "FLUX.2 Pro",
         endpoint: "https://test.services.ai.azure.com",
@@ -79,7 +79,9 @@ describe("POST /api/image/flux/generate", () => {
     }));
 
     vi.doMock("@/lib/auth", () => ({
-      getApiKey: vi.fn().mockResolvedValue("mock-token"),
+      getAuthHeaders: vi.fn().mockResolvedValue({
+        Authorization: "Bearer mock-token",
+      }),
     }));
 
     const mockFetch = vi.fn().mockResolvedValue({

@@ -339,6 +339,39 @@ describe("config", () => {
     });
   });
 
+  describe("getModelConfigForFamily", () => {
+    it("finds models only inside the requested family", async () => {
+      const fs = await import("fs");
+      vi.mocked(fs.default.existsSync).mockReturnValue(true);
+      vi.mocked(fs.default.readFileSync).mockReturnValue(
+        JSON.stringify(sampleConfig)
+      );
+
+      const { getModelConfigForFamily } = await import("@/lib/config");
+
+      expect(
+        getModelConfigForFamily("gpt-image", "gpt-image-1")
+      ).toBeDefined();
+      expect(
+        getModelConfigForFamily("tts", "gpt-image-1")
+      ).toBeNull();
+    });
+
+    it("returns null for disabled families", async () => {
+      const fs = await import("fs");
+      vi.mocked(fs.default.existsSync).mockReturnValue(true);
+      vi.mocked(fs.default.readFileSync).mockReturnValue(
+        JSON.stringify(sampleConfig)
+      );
+
+      const { getModelConfigForFamily } = await import("@/lib/config");
+
+      expect(
+        getModelConfigForFamily("mai-image", "MAI-Image-2")
+      ).toBeNull();
+    });
+  });
+
   describe("getSanitizedConfig", () => {
     it("sanitizes config by removing secrets", async () => {
       const fs = await import("fs");

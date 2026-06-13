@@ -53,6 +53,24 @@ describe("useGenerateSpeech", () => {
     expect(result.current.error).toBeNull();
   });
 
+  it("revokes generated audio URLs on unmount", async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(
+        JSON.stringify({ audio: "SGVsbG8=", format: "mp3" }),
+        { status: 200 }
+      )
+    );
+
+    const { result, unmount } = renderHook(() => useGenerateSpeech());
+
+    await act(async () => {
+      await result.current.generate(defaultParams);
+    });
+    unmount();
+
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith("blob:mock-url");
+  });
+
   it("calls /api/audio/tts/generate endpoint", async () => {
     vi.mocked(fetch).mockResolvedValue(
       new Response(

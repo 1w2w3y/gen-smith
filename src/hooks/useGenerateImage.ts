@@ -71,7 +71,6 @@ export function useGenerateImage(): UseGenerateImageResult {
           );
           trackClientEvent("ClientImageGeneration", {
             modelId: params.modelId,
-            prompt: params.prompt,
             size: params.size,
             quality: params.quality,
             outputFormat: params.outputFormat,

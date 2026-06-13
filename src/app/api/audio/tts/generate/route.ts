@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getModelConfig } from "@/lib/config";
-import { getApiKey } from "@/lib/auth";
+import { getModelConfigForFamily } from "@/lib/config";
+import { getAuthHeaders } from "@/lib/auth";
 import { trackGeneration, trackException } from "@/lib/telemetry";
 
 export async function POST(request: NextRequest) {
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const modelConfig = getModelConfig(modelId);
+    const modelConfig = getModelConfigForFamily("tts", modelId);
     if (!modelConfig) {
       return NextResponse.json(
         { error: { code: "not_found", message: `Model ${modelId} not found in config` } },
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const apiKey = await getApiKey(modelConfig);
+    const authHeaders = await getAuthHeaders(modelConfig, "api-key");
 
     // TTS uses Azure OpenAI deployment-specific endpoint
     const baseEndpoint = modelConfig.endpoint.replace(/\/+$/, "");
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        ...authHeaders,
       },
       body: JSON.stringify(requestBody),
     });
@@ -82,11 +82,9 @@ export async function POST(request: NextRequest) {
     trackGeneration("TTSGeneration", {
       modelId,
       deploymentName: modelConfig.deploymentName,
-      input,
       voice,
       speed: speed !== undefined ? String(speed) : "",
       responseFormat,
-      instructions: instructions || "",
     }, {
       durationMs,
       inputLength: input.length,
