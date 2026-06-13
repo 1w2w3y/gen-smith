@@ -1,6 +1,7 @@
 const en = {
   // Nav
   "nav.gptImage": "GPT Image",
+  "nav.batchImage": "Image Batch",
   "nav.maiImage": "MAI Image",
   "nav.fluxImage": "FLUX Image",
   "nav.tts": "TTS",
@@ -10,6 +11,8 @@ const en = {
   // Home
   "home.title": "gen-smith",
   "home.subtitle": "Playground for generative AI models on Azure AI Foundry",
+  "home.batchImage.title": "Image Batch",
+  "home.batchImage.desc": "Run one prompt across multiple image models",
   "home.gptImage.title": "GPT Image",
   "home.gptImage.desc": "Generate images with GPT Image models",
   "home.maiImage.title": "MAI Image",
@@ -32,6 +35,21 @@ const en = {
   "common.configError": "Configuration Error",
   "common.loading": "Loading configuration...",
   "common.download": "Download",
+
+  // Image Batch
+  "batchImage.title": "Image Batch",
+  "batchImage.desc": "Use one prompt to generate images across selected models",
+  "batchImage.models": "Models",
+  "batchImage.selectAll": "Select all",
+  "batchImage.clearAll": "Clear all",
+  "batchImage.generate": "Generate selected",
+  "batchImage.emptySelection": "Select at least one model to compare outputs",
+  "batchImage.noModelsTitle": "No image models configured",
+  "batchImage.noModelsDesc": "Configure GPT Image, MAI Image, or FLUX models to use batch generation.",
+  "batchImage.status.idle": "Ready",
+  "batchImage.status.loading": "Running",
+  "batchImage.status.success": "Done",
+  "batchImage.status.error": "Error",
 
   // GPT Image
   "gptImage.title": "Image Generation",

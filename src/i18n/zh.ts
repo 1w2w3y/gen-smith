@@ -1,6 +1,7 @@
 const zh = {
   // Nav
   "nav.gptImage": "GPT 图像",
+  "nav.batchImage": "批量图像",
   "nav.maiImage": "MAI 图像",
   "nav.fluxImage": "FLUX 图像",
   "nav.tts": "语音合成",
@@ -10,6 +11,8 @@ const zh = {
   // Home
   "home.title": "gen-smith",
   "home.subtitle": "Azure AI Foundry 生成式 AI 模型试验场",
+  "home.batchImage.title": "批量图像",
+  "home.batchImage.desc": "用同一个提示词同时调用多个图像模型",
   "home.gptImage.title": "GPT 图像",
   "home.gptImage.desc": "使用 GPT Image 模型生成图像",
   "home.maiImage.title": "MAI 图像",
@@ -32,6 +35,21 @@ const zh = {
   "common.configError": "配置错误",
   "common.loading": "正在加载配置...",
   "common.download": "下载",
+
+  // Image Batch
+  "batchImage.title": "批量图像生成",
+  "batchImage.desc": "输入一个提示词，勾选多个模型并同时生成图像",
+  "batchImage.models": "模型",
+  "batchImage.selectAll": "全选",
+  "batchImage.clearAll": "清空",
+  "batchImage.generate": "生成所选模型",
+  "batchImage.emptySelection": "至少选择一个模型来对比输出",
+  "batchImage.noModelsTitle": "未配置图像模型",
+  "batchImage.noModelsDesc": "请配置 GPT Image、MAI Image 或 FLUX 模型后再使用批量生成。",
+  "batchImage.status.idle": "就绪",
+  "batchImage.status.loading": "生成中",
+  "batchImage.status.success": "完成",
+  "batchImage.status.error": "错误",
 
   // GPT Image
   "gptImage.title": "图像生成",

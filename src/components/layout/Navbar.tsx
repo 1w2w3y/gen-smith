@@ -17,6 +17,14 @@ const NAV_FAMILY_MAP: Record<string, keyof SanitizedAppConfig["models"]> = {
   "/audio/tts": "tts",
 };
 
+function hasAnyImageFamily(config: SanitizedAppConfig): boolean {
+  return (
+    isModelFamilyAvailable(config, "gpt-image") ||
+    isModelFamilyAvailable(config, "mai-image") ||
+    isModelFamilyAvailable(config, "flux-image")
+  );
+}
+
 export function Navbar() {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
@@ -24,6 +32,7 @@ export function Navbar() {
   const { config } = useConfig();
 
   const allNavLinks = [
+    { href: "/image/batch", label: t("nav.batchImage") },
     { href: "/image/gpt", label: t("nav.gptImage") },
     { href: "/image/mai", label: t("nav.maiImage") },
     { href: "/image/flux", label: t("nav.fluxImage") },
@@ -32,6 +41,9 @@ export function Navbar() {
 
   const navLinks = config
     ? allNavLinks.filter((link) => {
+        if (link.href === "/image/batch") {
+          return hasAnyImageFamily(config);
+        }
         const familyKey = NAV_FAMILY_MAP[link.href];
         return familyKey ? isModelFamilyAvailable(config, familyKey) : true;
       })

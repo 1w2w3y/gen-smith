@@ -2,24 +2,37 @@
 
 import Link from "next/link";
 import { useLanguage } from "@/components/layout/LanguageProvider";
-import { ImageIcon, Brush, Wand2, AudioLines } from "lucide-react";
+import { ImageIcon, Brush, Wand2, AudioLines, LayoutGrid } from "lucide-react";
 import { useConfig, isModelFamilyAvailable } from "@/hooks/useConfig";
 import type { SanitizedAppConfig } from "@/types/config";
 import type { TranslationKey } from "@/i18n";
 
-const allCards: { href: string; titleKey: TranslationKey; descKey: TranslationKey; familyKey: keyof SanitizedAppConfig["models"]; Icon: React.ComponentType<{ className?: string }> }[] = [
+const allCards: { href: string; titleKey: TranslationKey; descKey: TranslationKey; familyKey: keyof SanitizedAppConfig["models"] | "any-image"; Icon: React.ComponentType<{ className?: string }> }[] = [
+  { href: "/image/batch", titleKey: "home.batchImage.title", descKey: "home.batchImage.desc", familyKey: "any-image", Icon: LayoutGrid },
   { href: "/image/gpt", titleKey: "home.gptImage.title", descKey: "home.gptImage.desc", familyKey: "gpt-image", Icon: ImageIcon },
   { href: "/image/mai", titleKey: "home.maiImage.title", descKey: "home.maiImage.desc", familyKey: "mai-image", Icon: Brush },
   { href: "/image/flux", titleKey: "home.fluxImage.title", descKey: "home.fluxImage.desc", familyKey: "flux-image", Icon: Wand2 },
   { href: "/audio/tts", titleKey: "home.tts.title", descKey: "home.tts.desc", familyKey: "tts", Icon: AudioLines },
 ];
 
+function hasAnyImageFamily(config: SanitizedAppConfig): boolean {
+  return (
+    isModelFamilyAvailable(config, "gpt-image") ||
+    isModelFamilyAvailable(config, "mai-image") ||
+    isModelFamilyAvailable(config, "flux-image")
+  );
+}
+
 export default function HomePage() {
   const { t } = useLanguage();
   const { config, isLoading } = useConfig();
 
   const visibleCards = config
-    ? allCards.filter((card) => isModelFamilyAvailable(config, card.familyKey))
+    ? allCards.filter((card) =>
+        card.familyKey === "any-image"
+          ? hasAnyImageFamily(config)
+          : isModelFamilyAvailable(config, card.familyKey)
+      )
     : [];
 
   return (
