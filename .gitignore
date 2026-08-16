@@ -17,6 +17,9 @@ next-env.d.ts
 # debug / logs
 *.log
 
+# browser tooling output
+.playwright-mcp/
+
 # env files
 .env
 .env*.local
@@ -32,6 +35,7 @@ coverage/
 
 # generated images
 generated-images/
+generated-image*.png
 
 # IDE
 .vscode/
