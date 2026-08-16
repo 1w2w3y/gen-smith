@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import OpenAI from "openai";
 
 // Mock the config module
 vi.mock("@/lib/config", () => ({
@@ -98,8 +99,8 @@ describe("POST /api/image/generate", () => {
     vi.doMock("openai", () => {
       const MockOpenAI = vi.fn().mockImplementation(function () {
         return { images: { generate: mockGen } };
-      });
-      MockOpenAI.APIError = class APIError extends Error {};
+      }) as unknown as typeof OpenAI;
+      MockOpenAI.APIError = class APIError extends Error {} as unknown as typeof OpenAI.APIError;
       return { default: MockOpenAI };
     });
 
@@ -146,8 +147,8 @@ describe("POST /api/image/generate", () => {
     vi.doMock("openai", () => {
       const MockOpenAI = vi.fn().mockImplementation(function () {
         return { images: { generate: mockGen } };
-      });
-      MockOpenAI.APIError = class APIError extends Error {};
+      }) as unknown as typeof OpenAI;
+      MockOpenAI.APIError = class APIError extends Error {} as unknown as typeof OpenAI.APIError;
       return { default: MockOpenAI };
     });
 
@@ -200,8 +201,8 @@ describe("POST /api/image/generate", () => {
     vi.doMock("openai", () => {
       const MockOpenAI = vi.fn().mockImplementation(function () {
         return { images: { generate: mockGen } };
-      });
-      MockOpenAI.APIError = class APIError extends Error {};
+      }) as unknown as typeof OpenAI;
+      MockOpenAI.APIError = class APIError extends Error {} as unknown as typeof OpenAI.APIError;
       return { default: MockOpenAI };
     });
 
@@ -244,8 +245,8 @@ describe("POST /api/image/generate", () => {
     vi.doMock("openai", () => {
       const MockOpenAI = vi.fn().mockImplementation(function () {
         return { images: { generate: mockGen } };
-      });
-      MockOpenAI.APIError = class APIError extends Error {};
+      }) as unknown as typeof OpenAI;
+      MockOpenAI.APIError = class APIError extends Error {} as unknown as typeof OpenAI.APIError;
       return { default: MockOpenAI };
     });
 
@@ -288,8 +289,8 @@ describe("POST /api/image/generate", () => {
     vi.doMock("openai", () => {
       const MockOpenAI = vi.fn().mockImplementation(function () {
         return { images: { generate: mockGen2 } };
-      });
-      MockOpenAI.APIError = class APIError extends Error {};
+      }) as unknown as typeof OpenAI;
+      MockOpenAI.APIError = class APIError extends Error {} as unknown as typeof OpenAI.APIError;
       return { default: MockOpenAI };
     });
 
@@ -331,8 +332,8 @@ describe("POST /api/image/generate", () => {
     vi.doMock("openai", () => {
       const MockOpenAI = vi.fn().mockImplementation(function () {
         return { images: { generate: mockGen } };
-      });
-      MockOpenAI.APIError = class APIError extends Error {};
+      }) as unknown as typeof OpenAI;
+      MockOpenAI.APIError = class APIError extends Error {} as unknown as typeof OpenAI.APIError;
       return { default: MockOpenAI };
     });
 
