@@ -96,7 +96,11 @@ export function GenerationForm({
   defaultValues,
 }: GenerationFormProps) {
   const { t } = useLanguage();
-  const [modelId, setModelId] = React.useState(defaultValues?.modelId ?? models[0]?.id ?? "");
+  const [modelId, setModelId] = React.useState<string>(() =>
+    defaultValues?.modelId && models.some((m) => m.id === defaultValues.modelId)
+      ? defaultValues.modelId
+      : models[0]?.id ?? ""
+  );
   const [prompt, setPrompt] = React.useState(defaultValues?.prompt ?? "");
   const [n, setN] = React.useState([defaultValues?.n ?? 1]);
   const [size, setSize] = React.useState<ImageSize>(defaultValues?.size ?? "1024x1024");

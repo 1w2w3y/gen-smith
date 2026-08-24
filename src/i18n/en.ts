@@ -35,6 +35,7 @@ const en = {
   "common.configError": "Configuration Error",
   "common.loading": "Loading configuration...",
   "common.download": "Download",
+  "common.retry": "Try again",
 
   // Image Batch
   "batchImage.title": "Image Batch",

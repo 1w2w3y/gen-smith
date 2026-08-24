@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useLanguage } from "@/components/layout/LanguageProvider";
 import { ImageIcon, Brush, Wand2, AudioLines, LayoutGrid } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { useConfig, isModelFamilyAvailable } from "@/hooks/useConfig";
 import type { SanitizedAppConfig } from "@/types/config";
 import type { TranslationKey } from "@/i18n";
@@ -25,7 +27,7 @@ function hasAnyImageFamily(config: SanitizedAppConfig): boolean {
 
 export default function HomePage() {
   const { t } = useLanguage();
-  const { config, isLoading } = useConfig();
+  const { config, error: configError, isLoading, retry: retryConfig } = useConfig();
 
   const visibleCards = config
     ? allCards.filter((card) =>
@@ -43,6 +45,19 @@ export default function HomePage() {
       </p>
       {isLoading ? (
         <p className="text-muted-foreground">{t("common.loading")}</p>
+      ) : configError ? (
+        <Alert variant="destructive" className="max-w-2xl">
+          <AlertTitle>{t("common.configError")}</AlertTitle>
+          <AlertDescription>{configError}</AlertDescription>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-2 col-start-2 justify-self-start"
+            onClick={retryConfig}
+          >
+            {t("common.retry")}
+          </Button>
+        </Alert>
       ) : visibleCards.length > 0 ? (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {visibleCards.map((card) => (

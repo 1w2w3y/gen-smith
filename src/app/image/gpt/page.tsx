@@ -8,6 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useGenerateImage } from "@/hooks/useGenerateImage";
 import { useHistory } from "@/hooks/useHistory";
+import { useConfig } from "@/hooks/useConfig";
 import { useLanguage } from "@/components/layout/LanguageProvider";
 import type { HistoryEntry, GptImageHistoryEntry } from "@/types/history";
 import * as React from "react";
@@ -19,10 +20,25 @@ interface ModelOption {
 
 export default function GptImagePage() {
   const { images, isLoading, error, generate } = useGenerateImage();
-  const history = useHistory("gpt-image");
-  const [models, setModels] = React.useState<ModelOption[]>([]);
-  const [configError, setConfigError] = React.useState<string | null>(null);
+  const {
+    entries: historyEntries,
+    isLoading: historyLoading,
+    addImageEntry,
+    removeEntry,
+    clearAll,
+    getFullImages,
+  } = useHistory("gpt-image");
+  const { config, error: configFetchError, retry: retryConfig } = useConfig();
   const { t } = useLanguage();
+
+  const gptImageFamily = config?.models["gpt-image"];
+  const models: ModelOption[] =
+    gptImageFamily?.enabled && gptImageFamily.models.length > 0
+      ? gptImageFamily.models
+      : [];
+  const configError =
+    configFetchError ??
+    (config !== null && models.length === 0 ? t("gptImage.configError") : null);
 
   const [activeTab, setActiveTab] = React.useState<"output" | "history">("output");
   const [formKey, setFormKey] = React.useState(0);
@@ -35,41 +51,15 @@ export default function GptImagePage() {
   const latestParamsRef = React.useRef<GenerationFormData | null>(null);
   const prevLoadingRef = React.useRef(false);
 
-  React.useEffect(() => {
-    async function loadConfig() {
-      try {
-        const response = await fetch("/api/config");
-        const config = await response.json();
-
-        if (!response.ok) {
-          throw new Error(config.error?.message || "Failed to load config");
-        }
-
-        const gptImageConfig = config.models?.["gpt-image"];
-        if (gptImageConfig?.enabled && gptImageConfig.models?.length > 0) {
-          setModels(gptImageConfig.models);
-        } else {
-          setConfigError(t("gptImage.configError"));
-        }
-      } catch (err: unknown) {
-        const message =
-          err instanceof Error ? err.message : "Failed to load config";
-        setConfigError(message);
-      }
-    }
-
-    loadConfig();
-  }, [t]);
-
   // Save to history when generation completes
   React.useEffect(() => {
     if (prevLoadingRef.current && !isLoading && images && images.length > 0 && latestParamsRef.current) {
       const params = latestParamsRef.current;
-      history.addImageEntry(params, images);
+      void addImageEntry(params, images);
       latestParamsRef.current = null;
     }
     prevLoadingRef.current = isLoading;
-  }, [isLoading, images, history]);
+  }, [isLoading, images, addImageEntry]);
 
   const handleGenerate = React.useCallback(
     (data: GenerationFormData) => {
@@ -99,12 +89,8 @@ export default function GptImagePage() {
 
   const handleViewImages = React.useCallback(
     async (historyId: string) => {
-      const fullImages = await history.getFullImages(historyId);
+      const fullImages = await getFullImages(historyId);
       if (fullImages.length > 0) {
-        // The ImageOutput component expects the same shape as generation hook output.
-        // We can set images through the generate hook, but it's simpler to just
-        // create a synthetic state update. For now we trigger viewing by switching tab.
-        // We'll display full images directly through a state override.
         setViewedImages(
           fullImages.map((img) => ({
             b64_json: img.b64_json,
@@ -115,7 +101,7 @@ export default function GptImagePage() {
         setActiveTab("output");
       }
     },
-    [history]
+    [getFullImages]
   );
 
   const displayImages = viewedImages ?? images;
@@ -126,6 +112,16 @@ export default function GptImagePage() {
         <Alert variant="destructive">
           <AlertTitle>{t("common.configError")}</AlertTitle>
           <AlertDescription>{configError}</AlertDescription>
+          {configFetchError && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-2 col-start-2 justify-self-start"
+              onClick={retryConfig}
+            >
+              {t("common.retry")}
+            </Button>
+          )}
         </Alert>
       </main>
     );
@@ -178,11 +174,11 @@ export default function GptImagePage() {
             <ImageOutput images={displayImages} isLoading={isLoading} />
           ) : (
             <HistoryPanel
-              entries={history.entries}
-              isLoading={history.isLoading}
+              entries={historyEntries}
+              isLoading={historyLoading}
               onRestore={handleRestore}
-              onDelete={history.removeEntry}
-              onClearAll={history.clearAll}
+              onDelete={removeEntry}
+              onClearAll={clearAll}
               onViewImages={handleViewImages}
             />
           )}

@@ -9,7 +9,7 @@ A lightweight playground for generative AI models — connect to Azure AI Foundr
 - **GPT Image playground** — Generate images with gpt-image-2, gpt-image-1.5, gpt-image-1, and gpt-image-1-mini with full parameter control (size, quality, background, format, moderation)
 - **MAI Image playground** — Generate images with MAI-Image-2 via Azure AI Foundry with configurable dimensions (square, landscape, portrait, small)
 - **FLUX Image playground** — Generate images with FLUX.2-pro and FLUX.2-flex via Azure AI Foundry serverless endpoints
-- **Text-to-Speech playground** — Convert text to speech with gpt-4o-mini-tts, 6 voice options, speed control, and style instructions
+- **Text-to-Speech playground** — Convert text to speech with gpt-4o-mini-tts, 13 voice options, speed control, and style instructions
 - **Two-column layout** — Configuration form on the left, output on the right
 - **Multi-image grid** — Generate up to 4 images at once with grid view, thumbnail carousel, and single-image zoom
 - **Flexible authentication** — API key, Azure CLI token (Entra ID), and managed identity support per model
@@ -93,6 +93,8 @@ Edit `config.json` with your Azure deployment details. Set `"enabled": false` or
 ```
 
 Make sure you're logged in with `az login` before starting the dev server.
+
+**GPT Image size validation:** `gpt-image-2` models additionally accept `"auto"` and arbitrary `WxH` sizes (both edges multiples of 16, long edge ≤ 3840, aspect ratio ≤ 3:1, 655,360–8,294,400 pixels). Override per model with the optional `"flexibleSize": true` / `"flexibleSize": false` field in `config.json`.
 
 ### Run
 

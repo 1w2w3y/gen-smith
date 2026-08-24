@@ -59,9 +59,13 @@ export function useHistory(playground: PlaygroundType) {
         imageCount: images.length,
       } as HistoryEntry;
 
-      await addEntry(entry);
-      await saveImages(id, images);
-      setEntries((prev) => [entry, ...prev].slice(0, 50));
+      try {
+        await addEntry(entry);
+        await saveImages(id, images);
+        setEntries((prev) => [entry, ...prev].slice(0, 50));
+      } catch (error) {
+        console.warn("[history] Failed to save history entry", error);
+      }
     },
     [playground]
   );
@@ -75,20 +79,32 @@ export function useHistory(playground: PlaygroundType) {
         params,
       } as HistoryEntry;
 
-      await addEntry(entry);
-      setEntries((prev) => [entry, ...prev].slice(0, 50));
+      try {
+        await addEntry(entry);
+        setEntries((prev) => [entry, ...prev].slice(0, 50));
+      } catch (error) {
+        console.warn("[history] Failed to save history entry", error);
+      }
     },
     []
   );
 
   const removeEntry = useCallback(async (id: string) => {
-    await dbDeleteEntry(id);
-    setEntries((prev) => prev.filter((e) => e.id !== id));
+    try {
+      await dbDeleteEntry(id);
+      setEntries((prev) => prev.filter((e) => e.id !== id));
+    } catch (error) {
+      console.warn("[history] Failed to delete history entry", error);
+    }
   }, []);
 
   const clearAll = useCallback(async () => {
-    await clearEntries(playground);
-    setEntries([]);
+    try {
+      await clearEntries(playground);
+      setEntries([]);
+    } catch (error) {
+      console.warn("[history] Failed to clear history", error);
+    }
   }, [playground]);
 
   const getFullImages = useCallback(

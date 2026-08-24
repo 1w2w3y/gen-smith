@@ -10,6 +10,7 @@
           "endpoint": "https://<resource>.openai.azure.com",
           "deploymentName": "gpt-image-2",
           "apiVersion": "2024-10-21",
+          "flexibleSize": true,
           "auth": {
             "type": "apiKey",
             "apiKey": "your-api-key-here"
@@ -75,7 +76,7 @@
           "id": "FLUX.2-pro",
           "displayName": "FLUX.2 Pro",
           "endpoint": "https://<resource>.services.ai.azure.com",
-          "deploymentName": "FLUX.2-pro",
+          "deploymentName": "flux-2-pro",
           "apiVersion": "preview",
           "auth": {
             "type": "apiKey",
@@ -86,7 +87,7 @@
           "id": "FLUX.2-flex",
           "displayName": "FLUX.2 Flex",
           "endpoint": "https://<resource>.services.ai.azure.com",
-          "deploymentName": "FLUX.2-flex",
+          "deploymentName": "flux-2-flex",
           "apiVersion": "preview",
           "auth": {
             "type": "apiKey",

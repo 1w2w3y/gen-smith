@@ -128,7 +128,12 @@ async function generateForModel(model: BatchModel, prompt: string) {
 
 export function BatchImageGenerationPage() {
   const { t } = useLanguage();
-  const { config, error: configError, isLoading: isConfigLoading } = useConfig();
+  const {
+    config,
+    error: configError,
+    isLoading: isConfigLoading,
+    retry: retryConfig,
+  } = useConfig();
   const availableModels = React.useMemo(
     () => getAvailableModels(config),
     [config]
@@ -235,6 +240,14 @@ export function BatchImageGenerationPage() {
         <Alert variant="destructive">
           <AlertTitle>{t("common.configError")}</AlertTitle>
           <AlertDescription>{configError}</AlertDescription>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-2 col-start-2 justify-self-start"
+            onClick={retryConfig}
+          >
+            {t("common.retry")}
+          </Button>
         </Alert>
       </main>
     );

@@ -8,6 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useGenerateFluxImage } from "@/hooks/useGenerateFluxImage";
 import { useHistory } from "@/hooks/useHistory";
+import { useConfig } from "@/hooks/useConfig";
 import { useLanguage } from "@/components/layout/LanguageProvider";
 import type { HistoryEntry, FluxImageHistoryEntry } from "@/types/history";
 import * as React from "react";
@@ -19,10 +20,25 @@ interface ModelOption {
 
 export default function FluxImagePage() {
   const { images, isLoading, error, generate } = useGenerateFluxImage();
-  const history = useHistory("flux-image");
-  const [models, setModels] = React.useState<ModelOption[]>([]);
-  const [configError, setConfigError] = React.useState<string | null>(null);
+  const {
+    entries: historyEntries,
+    isLoading: historyLoading,
+    addImageEntry,
+    removeEntry,
+    clearAll,
+    getFullImages,
+  } = useHistory("flux-image");
+  const { config, error: configFetchError, retry: retryConfig } = useConfig();
   const { t } = useLanguage();
+
+  const fluxImageFamily = config?.models["flux-image"];
+  const models: ModelOption[] =
+    fluxImageFamily?.enabled && fluxImageFamily.models.length > 0
+      ? fluxImageFamily.models
+      : [];
+  const configError =
+    configFetchError ??
+    (config !== null && models.length === 0 ? t("flux.configError") : null);
 
   const [activeTab, setActiveTab] = React.useState<"output" | "history">("output");
   const [formKey, setFormKey] = React.useState(0);
@@ -34,41 +50,15 @@ export default function FluxImagePage() {
   const latestParamsRef = React.useRef<FluxGenerationFormData | null>(null);
   const prevLoadingRef = React.useRef(false);
 
-  React.useEffect(() => {
-    async function loadConfig() {
-      try {
-        const response = await fetch("/api/config");
-        const config = await response.json();
-
-        if (!response.ok) {
-          throw new Error(config.error?.message || "Failed to load config");
-        }
-
-        const fluxImageConfig = config.models?.["flux-image"];
-        if (fluxImageConfig?.enabled && fluxImageConfig.models?.length > 0) {
-          setModels(fluxImageConfig.models);
-        } else {
-          setConfigError(t("flux.configError"));
-        }
-      } catch (err: unknown) {
-        const message =
-          err instanceof Error ? err.message : "Failed to load config";
-        setConfigError(message);
-      }
-    }
-
-    loadConfig();
-  }, [t]);
-
   // Save to history when generation completes
   React.useEffect(() => {
     if (prevLoadingRef.current && !isLoading && images && images.length > 0 && latestParamsRef.current) {
       const params = latestParamsRef.current;
-      history.addImageEntry(params, images);
+      void addImageEntry(params, images);
       latestParamsRef.current = null;
     }
     prevLoadingRef.current = isLoading;
-  }, [isLoading, images, history]);
+  }, [isLoading, images, addImageEntry]);
 
   const handleGenerate = React.useCallback(
     (data: FluxGenerationFormData) => {
@@ -94,7 +84,7 @@ export default function FluxImagePage() {
 
   const handleViewImages = React.useCallback(
     async (historyId: string) => {
-      const fullImages = await history.getFullImages(historyId);
+      const fullImages = await getFullImages(historyId);
       if (fullImages.length > 0) {
         setViewedImages(
           fullImages.map((img) => ({
@@ -106,7 +96,7 @@ export default function FluxImagePage() {
         setActiveTab("output");
       }
     },
-    [history]
+    [getFullImages]
   );
 
   const displayImages = viewedImages ?? images;
@@ -117,6 +107,16 @@ export default function FluxImagePage() {
         <Alert variant="destructive">
           <AlertTitle>{t("common.configError")}</AlertTitle>
           <AlertDescription>{configError}</AlertDescription>
+          {configFetchError && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-2 col-start-2 justify-self-start"
+              onClick={retryConfig}
+            >
+              {t("common.retry")}
+            </Button>
+          )}
         </Alert>
       </main>
     );
@@ -169,11 +169,11 @@ export default function FluxImagePage() {
             <ImageOutput images={displayImages} isLoading={isLoading} />
           ) : (
             <HistoryPanel
-              entries={history.entries}
-              isLoading={history.isLoading}
+              entries={historyEntries}
+              isLoading={historyLoading}
               onRestore={handleRestore}
-              onDelete={history.removeEntry}
-              onClearAll={history.clearAll}
+              onDelete={removeEntry}
+              onClearAll={clearAll}
               onViewImages={handleViewImages}
             />
           )}

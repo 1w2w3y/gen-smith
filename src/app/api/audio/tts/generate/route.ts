@@ -2,11 +2,27 @@ import { NextRequest, NextResponse } from "next/server";
 import { getModelConfigForFamily } from "@/lib/config";
 import { getAuthHeaders } from "@/lib/auth";
 import { trackGeneration, trackException } from "@/lib/telemetry";
+import { TTS_FORMATS, TTS_VOICES } from "@/types/tts";
+
+function badRequest(message: string) {
+  return NextResponse.json(
+    { error: { code: "bad_request", message } },
+    { status: 400 }
+  );
+}
 
 export async function POST(request: NextRequest) {
   let requestModelId = "unknown";
   try {
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return badRequest("Request body must be valid JSON");
+    }
+    if (typeof body !== "object" || body === null || Array.isArray(body)) {
+      return badRequest("Request body must be a JSON object");
+    }
     const {
       modelId,
       input,
@@ -17,11 +33,29 @@ export async function POST(request: NextRequest) {
     } = body;
     requestModelId = modelId ?? "unknown";
 
-    if (!modelId || !input) {
-      return NextResponse.json(
-        { error: { code: "bad_request", message: "modelId and input are required" } },
-        { status: 400 }
-      );
+    if (
+      typeof modelId !== "string" ||
+      !modelId.trim() ||
+      typeof input !== "string" ||
+      !input.trim()
+    ) {
+      return badRequest("modelId and input are required");
+    }
+
+    if (!TTS_VOICES.includes(voice)) {
+      return badRequest(`Invalid voice. Expected one of: ${TTS_VOICES.join(", ")}`);
+    }
+
+    if (!TTS_FORMATS.includes(responseFormat)) {
+      return badRequest(`Invalid responseFormat. Expected one of: ${TTS_FORMATS.join(", ")}`);
+    }
+
+    let parsedSpeed: number | undefined;
+    if (speed !== undefined) {
+      if (typeof speed !== "number" || !Number.isFinite(speed) || speed < 0.25 || speed > 4.0) {
+        return badRequest("speed must be a number between 0.25 and 4.0");
+      }
+      parsedSpeed = speed;
     }
 
     const modelConfig = getModelConfigForFamily("tts", modelId);
@@ -46,7 +80,7 @@ export async function POST(request: NextRequest) {
       response_format: responseFormat,
     };
 
-    if (speed !== undefined) requestBody.speed = speed;
+    if (parsedSpeed !== undefined) requestBody.speed = parsedSpeed;
     if (instructions) requestBody.instructions = instructions;
 
     console.log(`[api/audio/tts/generate] Calling Azure TTS at ${url}`);
@@ -83,7 +117,7 @@ export async function POST(request: NextRequest) {
       modelId,
       deploymentName: modelConfig.deploymentName,
       voice,
-      speed: speed !== undefined ? String(speed) : "",
+      speed: parsedSpeed !== undefined ? String(parsedSpeed) : "",
       responseFormat,
     }, {
       durationMs,

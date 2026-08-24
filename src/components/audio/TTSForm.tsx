@@ -21,7 +21,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from "@/components/layout/LanguageProvider";
-import type { TTSVoice, TTSFormat } from "@/types/tts";
+import { TTS_FORMATS, TTS_VOICES, type TTSFormat, type TTSVoice } from "@/types/tts";
 import { Loader2 } from "lucide-react";
 import * as React from "react";
 
@@ -46,23 +46,30 @@ interface TTSFormProps {
   defaultValues?: Partial<TTSFormData>;
 }
 
-const VOICES: { value: TTSVoice; label: string }[] = [
-  { value: "alloy", label: "Alloy" },
-  { value: "echo", label: "Echo" },
-  { value: "fable", label: "Fable" },
-  { value: "onyx", label: "Onyx" },
-  { value: "nova", label: "Nova" },
-  { value: "shimmer", label: "Shimmer" },
-];
+const VOICES: { value: TTSVoice; label: string }[] = TTS_VOICES.map((voice) => ({
+  value: voice,
+  label: voice.charAt(0).toUpperCase() + voice.slice(1),
+}));
 
 export function TTSForm({ models, onSubmit, isLoading, defaultValues }: TTSFormProps) {
   const { t } = useLanguage();
-  const [modelId, setModelId] = React.useState(defaultValues?.modelId ?? models[0]?.id ?? "");
+  const [modelId, setModelId] = React.useState<string>(() =>
+    defaultValues?.modelId && models.some((m) => m.id === defaultValues.modelId)
+      ? defaultValues.modelId
+      : models[0]?.id ?? ""
+  );
   const [input, setInput] = React.useState(defaultValues?.input ?? "");
-  const [voice, setVoice] = React.useState<TTSVoice>(defaultValues?.voice ?? "alloy");
+  const [voice, setVoice] = React.useState<TTSVoice>(() =>
+    defaultValues?.voice && (TTS_VOICES as readonly string[]).includes(defaultValues.voice)
+      ? defaultValues.voice
+      : "alloy"
+  );
   const [speed, setSpeed] = React.useState([defaultValues?.speed ?? 1.0]);
-  const [responseFormat, setResponseFormat] =
-    React.useState<TTSFormat>(defaultValues?.responseFormat ?? "mp3");
+  const [responseFormat, setResponseFormat] = React.useState<TTSFormat>(() =>
+    defaultValues?.responseFormat && (TTS_FORMATS as readonly string[]).includes(defaultValues.responseFormat)
+      ? defaultValues.responseFormat
+      : "mp3"
+  );
   const [instructions, setInstructions] = React.useState(defaultValues?.instructions ?? "");
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -157,16 +164,14 @@ export function TTSForm({ models, onSubmit, isLoading, defaultValues }: TTSFormP
               disabled={isLoading}
               className="flex flex-wrap gap-x-5 gap-y-3"
             >
-              {(["mp3", "opus", "aac", "flac", "wav"] as TTSFormat[]).map(
-                (fmt) => (
-                  <div key={fmt} className="flex items-center space-x-2">
-                    <RadioGroupItem value={fmt} id={`fmt-${fmt}`} />
-                    <Label htmlFor={`fmt-${fmt}`} className="cursor-pointer uppercase">
-                      {fmt}
-                    </Label>
-                  </div>
-                )
-              )}
+              {TTS_FORMATS.map((fmt) => (
+                <div key={fmt} className="flex items-center space-x-2">
+                  <RadioGroupItem value={fmt} id={`fmt-${fmt}`} />
+                  <Label htmlFor={`fmt-${fmt}`} className="cursor-pointer uppercase">
+                    {fmt}
+                  </Label>
+                </div>
+              ))}
             </RadioGroup>
           </div>
 

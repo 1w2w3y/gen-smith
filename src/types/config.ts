@@ -13,6 +13,11 @@ export interface ModelConfig {
   deploymentName: string;
   apiVersion: string;
   auth: AuthConfig;
+  /**
+   * Opt in/out of the flexible (arbitrary WxH) size rules for the GPT Image
+   * route. When omitted, the route detects gpt-image-2 by deploymentName/id.
+   */
+  flexibleSize?: boolean;
 }
 
 export interface ModelFamilyConfig {

@@ -90,12 +90,12 @@ export function useGenerateSpeech(): UseGenerateSpeechResult {
 
         setAudioUrl(url);
         setFormat(fmt);
-          trackClientEvent("ClientTTSGeneration", {
-            modelId: params.modelId,
-            voice: params.voice,
-            speed: params.speed !== undefined ? String(params.speed) : "",
-            responseFormat: params.responseFormat || "mp3",
-          }, {
+        trackClientEvent("ClientTTSGeneration", {
+          modelId: params.modelId,
+          voice: params.voice,
+          speed: params.speed !== undefined ? String(params.speed) : "",
+          responseFormat: params.responseFormat || "mp3",
+        }, {
           durationMs: Date.now() - startTime,
           inputLength: params.input.length,
         });

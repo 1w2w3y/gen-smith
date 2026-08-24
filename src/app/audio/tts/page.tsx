@@ -8,6 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useGenerateSpeech } from "@/hooks/useGenerateSpeech";
 import { useHistory } from "@/hooks/useHistory";
+import { useConfig } from "@/hooks/useConfig";
 import { useLanguage } from "@/components/layout/LanguageProvider";
 import type { HistoryEntry, TTSHistoryEntry } from "@/types/history";
 import * as React from "react";
@@ -20,10 +21,22 @@ interface ModelOption {
 export default function TTSPage() {
   const { audioUrl, format, isLoading, error, generate } =
     useGenerateSpeech();
-  const history = useHistory("tts");
-  const [models, setModels] = React.useState<ModelOption[]>([]);
-  const [configError, setConfigError] = React.useState<string | null>(null);
+  const {
+    entries: historyEntries,
+    isLoading: historyLoading,
+    addTTSEntry,
+    removeEntry,
+    clearAll,
+  } = useHistory("tts");
+  const { config, error: configFetchError, retry: retryConfig } = useConfig();
   const { t } = useLanguage();
+
+  const ttsFamily = config?.models["tts"];
+  const models: ModelOption[] =
+    ttsFamily?.enabled && ttsFamily.models.length > 0 ? ttsFamily.models : [];
+  const configError =
+    configFetchError ??
+    (config !== null && models.length === 0 ? t("tts.configError") : null);
 
   const [activeTab, setActiveTab] = React.useState<"output" | "history">("output");
   const [formKey, setFormKey] = React.useState(0);
@@ -32,41 +45,15 @@ export default function TTSPage() {
   const latestParamsRef = React.useRef<TTSFormData | null>(null);
   const prevLoadingRef = React.useRef(false);
 
-  React.useEffect(() => {
-    async function loadConfig() {
-      try {
-        const response = await fetch("/api/config");
-        const config = await response.json();
-
-        if (!response.ok) {
-          throw new Error(config.error?.message || "Failed to load config");
-        }
-
-        const ttsConfig = config.models?.["tts"];
-        if (ttsConfig?.enabled && ttsConfig.models?.length > 0) {
-          setModels(ttsConfig.models);
-        } else {
-          setConfigError(t("tts.configError"));
-        }
-      } catch (err: unknown) {
-        const message =
-          err instanceof Error ? err.message : "Failed to load config";
-        setConfigError(message);
-      }
-    }
-
-    loadConfig();
-  }, [t]);
-
   // Save to history when generation completes
   React.useEffect(() => {
     if (prevLoadingRef.current && !isLoading && audioUrl && latestParamsRef.current) {
       const params = latestParamsRef.current;
-      history.addTTSEntry(params);
+      void addTTSEntry(params);
       latestParamsRef.current = null;
     }
     prevLoadingRef.current = isLoading;
-  }, [isLoading, audioUrl, history]);
+  }, [isLoading, audioUrl, addTTSEntry]);
 
   const handleGenerate = React.useCallback(
     (data: TTSFormData) => {
@@ -96,6 +83,16 @@ export default function TTSPage() {
         <Alert variant="destructive">
           <AlertTitle>{t("common.configError")}</AlertTitle>
           <AlertDescription>{configError}</AlertDescription>
+          {configFetchError && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-2 col-start-2 justify-self-start"
+              onClick={retryConfig}
+            >
+              {t("common.retry")}
+            </Button>
+          )}
         </Alert>
       </main>
     );
@@ -152,11 +149,11 @@ export default function TTSPage() {
             />
           ) : (
             <HistoryPanel
-              entries={history.entries}
-              isLoading={history.isLoading}
+              entries={historyEntries}
+              isLoading={historyLoading}
               onRestore={handleRestore}
-              onDelete={history.removeEntry}
-              onClearAll={history.clearAll}
+              onDelete={removeEntry}
+              onClearAll={clearAll}
             />
           )}
         </div>

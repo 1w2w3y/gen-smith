@@ -232,6 +232,50 @@ describe("config", () => {
       expect(config.models["gpt-image"]!.models[0].auth.type).toBe("managedIdentity");
       expect(config.models["gpt-image"]!.models[0].auth.clientId).toBe("my-client-id");
     });
+
+    it("warns and falls back to apiKey for an unrecognized AUTH_TYPE", async () => {
+      process.env.GEN_SMITH_GPT_IMAGE_ENDPOINT = "https://env.openai.azure.com";
+      process.env.GEN_SMITH_GPT_IMAGE_API_KEY = "env-key";
+      process.env.GEN_SMITH_GPT_IMAGE_AUTH_TYPE = "bogus";
+
+      const fs = await import("fs");
+      vi.mocked(fs.default.existsSync).mockReturnValue(false);
+
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      const { loadConfig } = await import("@/lib/config");
+      const config = loadConfig();
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Unrecognized GEN_SMITH_GPT_IMAGE_AUTH_TYPE "bogus"'
+        )
+      );
+      expect(config.models["gpt-image"]!.models[0].auth.type).toBe("apiKey");
+      expect(config.models["gpt-image"]!.models[0].auth.apiKey).toBe("env-key");
+
+      warnSpy.mockRestore();
+    });
+
+    it("does not warn for the explicitly documented apiKey AUTH_TYPE", async () => {
+      process.env.GEN_SMITH_GPT_IMAGE_ENDPOINT = "https://env.openai.azure.com";
+      process.env.GEN_SMITH_GPT_IMAGE_API_KEY = "env-key";
+      process.env.GEN_SMITH_GPT_IMAGE_AUTH_TYPE = "apiKey";
+
+      const fs = await import("fs");
+      vi.mocked(fs.default.existsSync).mockReturnValue(false);
+
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      const { loadConfig } = await import("@/lib/config");
+      const config = loadConfig();
+
+      expect(warnSpy).not.toHaveBeenCalled();
+      expect(config.models["gpt-image"]!.models[0].auth.type).toBe("apiKey");
+      expect(config.models["gpt-image"]!.models[0].auth.apiKey).toBe("env-key");
+
+      warnSpy.mockRestore();
+    });
   });
 
   describe("config merging", () => {

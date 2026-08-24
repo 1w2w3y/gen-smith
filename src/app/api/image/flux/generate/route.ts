@@ -4,10 +4,25 @@ import { getAuthHeaders } from "@/lib/auth";
 import { trackGeneration, trackException } from "@/lib/telemetry";
 import { detectBase64ImageFormat } from "@/lib/image-format";
 
+function badRequest(message: string) {
+  return NextResponse.json(
+    { error: { code: "bad_request", message } },
+    { status: 400 }
+  );
+}
+
 export async function POST(request: NextRequest) {
   let requestModelId = "unknown";
   try {
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return badRequest("Request body must be valid JSON");
+    }
+    if (typeof body !== "object" || body === null || Array.isArray(body)) {
+      return badRequest("Request body must be a JSON object");
+    }
     const {
       modelId,
       prompt,
@@ -16,11 +31,20 @@ export async function POST(request: NextRequest) {
     } = body;
     requestModelId = modelId ?? "unknown";
 
-    if (!modelId || !prompt) {
-      return NextResponse.json(
-        { error: { code: "bad_request", message: "modelId and prompt are required" } },
-        { status: 400 }
-      );
+    if (
+      typeof modelId !== "string" ||
+      !modelId.trim() ||
+      typeof prompt !== "string" ||
+      !prompt.trim()
+    ) {
+      return badRequest("modelId and prompt are required");
+    }
+
+    if (
+      !Number.isInteger(width) || width < 1 || width > 4096 ||
+      !Number.isInteger(height) || height < 1 || height > 4096
+    ) {
+      return badRequest("width and height must be integers between 1 and 4096");
     }
 
     const modelConfig = getModelConfigForFamily("flux-image", modelId);
@@ -74,24 +98,24 @@ export async function POST(request: NextRequest) {
     const result = await response.json();
     const durationMs = Date.now() - startTime;
 
-    trackGeneration("FluxImageGeneration", {
-      modelId,
-      deploymentName: modelConfig.deploymentName,
-      width: String(width),
-      height: String(height),
-      imageCount: "1",
-    }, {
-      durationMs,
-      promptLength: prompt.length,
-      imageCount: 1,
-    });
-
     if (!result.data || result.data.length === 0) {
       return NextResponse.json(
         { error: { code: "empty_response", message: "No images returned from API" } },
         { status: 500 }
       );
     }
+
+    trackGeneration("FluxImageGeneration", {
+      modelId,
+      deploymentName: modelConfig.deploymentName,
+      width: String(width),
+      height: String(height),
+      imageCount: String(result.data.length),
+    }, {
+      durationMs,
+      promptLength: prompt.length,
+      imageCount: result.data.length,
+    });
 
     const images = result.data.map(
       (img: { b64_json?: string }, index: number) => ({

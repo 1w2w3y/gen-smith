@@ -37,6 +37,7 @@ function mockConfig(config: SanitizedAppConfig | null = imageConfig) {
     config,
     error: null,
     isLoading: false,
+    retry: vi.fn(),
   });
 }
 

@@ -91,7 +91,11 @@ export function FluxGenerationForm({
   defaultValues,
 }: FluxGenerationFormProps) {
   const { t } = useLanguage();
-  const [modelId, setModelId] = React.useState(defaultValues?.modelId ?? models[0]?.id ?? "");
+  const [modelId, setModelId] = React.useState<string>(() =>
+    defaultValues?.modelId && models.some((m) => m.id === defaultValues.modelId)
+      ? defaultValues.modelId
+      : models[0]?.id ?? ""
+  );
   const [prompt, setPrompt] = React.useState(defaultValues?.prompt ?? "");
   const [dimensionPreset, setDimensionPreset] =
     React.useState<DimensionPreset>(toDimensionPreset(defaultValues?.width, defaultValues?.height));

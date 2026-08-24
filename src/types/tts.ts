@@ -1,11 +1,34 @@
-export type TTSVoice = "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer";
+export type TTSVoice =
+  | "alloy"
+  | "ash"
+  | "ballad"
+  | "cedar"
+  | "coral"
+  | "echo"
+  | "fable"
+  | "marin"
+  | "nova"
+  | "onyx"
+  | "sage"
+  | "shimmer"
+  | "verse";
+
 export type TTSFormat = "mp3" | "opus" | "aac" | "flac" | "wav";
 
-export interface TTSGenerateRequest {
-  modelId: string;
-  input: string;
-  voice: TTSVoice;
-  speed?: number;
-  responseFormat?: TTSFormat;
-  instructions?: string;
-}
+export const TTS_VOICES: readonly TTSVoice[] = [
+  "alloy",
+  "ash",
+  "ballad",
+  "cedar",
+  "coral",
+  "echo",
+  "fable",
+  "marin",
+  "nova",
+  "onyx",
+  "sage",
+  "shimmer",
+  "verse",
+];
+
+export const TTS_FORMATS: readonly TTSFormat[] = ["mp3", "opus", "aac", "flac", "wav"];

@@ -35,6 +35,7 @@ const zh = {
   "common.configError": "配置错误",
   "common.loading": "正在加载配置...",
   "common.download": "下载",
+  "common.retry": "重试",
 
   // Image Batch
   "batchImage.title": "批量图像生成",

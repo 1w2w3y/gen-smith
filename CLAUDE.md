@@ -13,7 +13,7 @@ gen-smith is a lightweight web playground for generative AI models (image genera
 - **AI SDK**: `openai` npm package for GPT Image models, direct `fetch()` for FLUX and TTS
 - **Auth**: `@azure/identity` for Azure CLI / Entra ID / managed identity authentication
 - **Package Manager**: npm
-- **Testing**: Vitest + Testing Library (67 tests across 11 files)
+- **Testing**: Vitest + Testing Library (172 tests across 18 files)
 
 ## Key Commands
 
@@ -50,7 +50,7 @@ npm test          # Run tests (vitest)
 - `src/types/` — TypeScript type definitions
   - `config.ts` — Config types (AppConfig, ModelConfig, auth types)
   - `image.ts` — GPT Image types (sizes, quality, formats)
-  - `flux.ts` — FLUX types (width/height request)
+  - `history.ts` — History entry and stored-image types
   - `tts.ts` — TTS types (voices, formats)
 - `config.json` — User's model configuration (gitignored)
 - `config.example.json` — Template config (committed)

@@ -60,7 +60,7 @@ Developers and AI practitioners who have deployed generative AI models on Azure 
 - **MAI Image playground page** (MAI-Image-2) with model-specific parameters
 - **FLUX Image playground page** (FLUX.2-pro, FLUX.2-flex) with model-specific parameters
 - **TTS playground page** (gpt-4o-mini-tts)
-  - Text input, voice selector (alloy, echo, fable, onyx, nova, shimmer)
+  - Text input, voice selector (alloy, ash, ballad, cedar, coral, echo, fable, marin, nova, onyx, sage, shimmer, verse)
   - Speed control, instructions for style/tone guidance
   - Audio player with download
   - Output format selection (mp3, opus, aac, flac, wav)

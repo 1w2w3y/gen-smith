@@ -61,7 +61,8 @@ export function ImageOutput({ images, isLoading }: ImageOutputProps) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    // Defer revoking so the download can start in browsers that need the URL alive
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const showCarousel = images && images.length > 1;

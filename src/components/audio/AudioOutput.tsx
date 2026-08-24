@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/components/layout/LanguageProvider";
 import { Loader2, Download, Volume2 } from "lucide-react";
-import * as React from "react";
 
 interface AudioOutputProps {
   audioUrl: string | null;
@@ -13,7 +12,6 @@ interface AudioOutputProps {
 
 export function AudioOutput({ audioUrl, format, isLoading }: AudioOutputProps) {
   const { t } = useLanguage();
-  const audioRef = React.useRef<HTMLAudioElement>(null);
 
   const handleDownload = () => {
     if (!audioUrl || !format) return;
@@ -36,7 +34,6 @@ export function AudioOutput({ audioUrl, format, isLoading }: AudioOutputProps) {
         <>
           <Volume2 className="h-16 w-16 text-muted-foreground" />
           <audio
-            ref={audioRef}
             src={audioUrl}
             controls
             autoPlay

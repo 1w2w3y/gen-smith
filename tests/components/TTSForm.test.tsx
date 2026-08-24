@@ -3,6 +3,7 @@ import { render as _render, screen } from "@testing-library/react";
 import { renderWithProviders as render } from "../test-utils";
 import userEvent from "@testing-library/user-event";
 import { TTSForm } from "@/components/audio/TTSForm";
+import { TTS_VOICES, type TTSFormat, type TTSVoice } from "@/types/tts";
 
 const mockModels = [
   { id: "gpt-4o-mini-tts", displayName: "GPT-4o Mini TTS" },
@@ -23,17 +24,64 @@ describe("TTSForm", () => {
     expect(screen.getByText("Instructions (optional)")).toBeInTheDocument();
   });
 
-  it("renders all 6 voice options", () => {
+  it("renders every documented voice option", () => {
     render(
       <TTSForm models={mockModels} onSubmit={vi.fn()} isLoading={false} />
     );
 
-    expect(screen.getByText("Alloy")).toBeInTheDocument();
-    expect(screen.getByText("Echo")).toBeInTheDocument();
-    expect(screen.getByText("Fable")).toBeInTheDocument();
-    expect(screen.getByText("Onyx")).toBeInTheDocument();
-    expect(screen.getByText("Nova")).toBeInTheDocument();
-    expect(screen.getByText("Shimmer")).toBeInTheDocument();
+    // Pin the expected labels literally so the test fails if a voice is
+    // silently dropped from the shared list (a loop over TTS_VOICES alone
+    // would pass either way).
+    const expectedLabels = [
+      "Alloy",
+      "Ash",
+      "Ballad",
+      "Cedar",
+      "Coral",
+      "Echo",
+      "Fable",
+      "Marin",
+      "Nova",
+      "Onyx",
+      "Sage",
+      "Shimmer",
+      "Verse",
+    ];
+    expect(TTS_VOICES).toHaveLength(expectedLabels.length);
+    for (const label of expectedLabels) {
+      expect(screen.getByText(label), `voice label ${label}`).toBeInTheDocument();
+    }
+  });
+
+  it("uses a recognized restored voice and format from defaultValues", () => {
+    render(
+      <TTSForm
+        models={mockModels}
+        onSubmit={vi.fn()}
+        isLoading={false}
+        defaultValues={{ voice: "nova", responseFormat: "opus" }}
+      />
+    );
+
+    expect(screen.getByRole("radio", { name: "Nova" })).toBeChecked();
+    expect(screen.getByRole("radio", { name: "opus" })).toBeChecked();
+  });
+
+  it("coerces unrecognized restored voice and format back to the defaults", () => {
+    render(
+      <TTSForm
+        models={mockModels}
+        onSubmit={vi.fn()}
+        isLoading={false}
+        defaultValues={{
+          voice: "legacy-voice" as never,
+          responseFormat: "pcm" as never,
+        }}
+      />
+    );
+
+    expect(screen.getByRole("radio", { name: "Alloy" })).toBeChecked();
+    expect(screen.getByRole("radio", { name: "mp3" })).toBeChecked();
   });
 
   it("disables generate button when input is empty", () => {

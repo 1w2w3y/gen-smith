@@ -51,7 +51,16 @@ function loadConfigFromEnv(): AppConfig | null {
 
     hasAny = true;
 
-    const authType = (process.env[`${family.prefix}_AUTH_TYPE`] || "apiKey") as AuthType;
+    const rawAuthType = process.env[`${family.prefix}_AUTH_TYPE`];
+    let authType: AuthType = "apiKey";
+    if (rawAuthType === "azureCli" || rawAuthType === "managedIdentity") {
+      authType = rawAuthType;
+    } else if (rawAuthType && rawAuthType !== "apiKey") {
+      console.warn(
+        `[config] Unrecognized ${family.prefix}_AUTH_TYPE "${rawAuthType}". ` +
+          "Expected one of: apiKey, azureCli, managedIdentity. Falling back to apiKey."
+      );
+    }
     const apiKey = process.env[`${family.prefix}_API_KEY`] || "";
     const clientId = process.env[`${family.prefix}_CLIENT_ID`];
     const apiVersion = process.env[`${family.prefix}_API_VERSION`] || family.defaultApiVersion;

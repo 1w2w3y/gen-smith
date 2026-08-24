@@ -9,7 +9,7 @@
 - **GPT 图像试验场** —— 使用 gpt-image-2、gpt-image-1.5、gpt-image-1 和 gpt-image-1-mini 生成图像，支持完整的参数控制（尺寸、质量、背景、格式、内容审核）
 - **MAI 图像试验场** —— 通过 Azure AI Foundry 使用 MAI-Image-2 生成图像，支持可配置尺寸（正方形、横向、纵向、小尺寸）
 - **FLUX 图像试验场** —— 通过 Azure AI Foundry 无服务器端点，使用 FLUX.2-pro 和 FLUX.2-flex 生成图像
-- **文字转语音试验场** —— 使用 gpt-4o-mini-tts 将文字转换为语音，提供 6 种声音选择、语速控制和风格指令
+- **文字转语音试验场** —— 使用 gpt-4o-mini-tts 将文字转换为语音，提供 13 种声音选择、语速控制和风格指令
 - **双栏布局** —— 左侧配置表单，右侧输出结果
 - **多图网格** —— 一次生成最多 4 张图像，支持网格视图、缩略图轮播和单图放大
 - **灵活认证** —— 每个模型支持 API 密钥、Azure CLI 令牌（Entra ID）和托管标识认证
@@ -93,6 +93,8 @@ cp config.example.json config.json
 ```
 
 启动开发服务器前，请确保已通过 `az login` 登录。
+
+**GPT Image 尺寸校验：** `gpt-image-2` 模型额外接受 `"auto"` 与任意 `WxH` 尺寸（两边均为 16 的倍数，长边 ≤ 3840，宽高比 ≤ 3:1，像素数 655,360–8,294,400）。可通过 `config.json` 中可选的 `"flexibleSize": true` / `"flexibleSize": false` 字段按模型覆盖该行为。
 
 ### 运行
 
