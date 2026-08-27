@@ -49,7 +49,7 @@
 
 ### 前提条件
 
-- [Node.js](https://nodejs.org/) 20+
+- [Node.js](https://nodejs.org/) 22+
 - npm（随 Node.js 一同安装）
 - 已部署一个或多个模型的 Azure AI Foundry 资源
 
@@ -164,7 +164,29 @@ docker run -p 3000:3000 \
 
 部署条目支持 `id:deploymentName` 语法，用于模型 ID 与 Azure 部署名称不同的情况（例如 `FLUX.2-pro:flux-2-pro`）。
 
-遥测默认关闭。如需启用 Application Insights，请为服务端事件设置 `APPLICATIONINSIGHTS_CONNECTION_STRING`，为浏览器事件设置 `NEXT_PUBLIC_APPLICATIONINSIGHTS_CONNECTION_STRING`；遥测不会发送 prompt 或 input 正文。
+Application Insights 遥测默认关闭。如需启用，请为服务端事件设置 `APPLICATIONINSIGHTS_CONNECTION_STRING`，为浏览器事件设置 `NEXT_PUBLIC_APPLICATIONINSIGHTS_CONNECTION_STRING`；prompt 和 input 正文不会发送到 Application Insights。
+
+### Datadog Agent Observability
+
+应用已为所有 GPT Image、MAI、FLUX 和 TTS 模型调用接入 Datadog Agent Observability。请将 `.env.example` 中的条目复制到 `.env.local`，把占位符替换为你的 Datadog API 密钥，然后正常启动应用：
+
+```dotenv
+DD_LLMOBS_ENABLED=true
+DD_LLMOBS_AGENTLESS_ENABLED=true
+DD_LLMOBS_ML_APP=gen-smith
+DD_SITE=us3.datadoghq.com
+DD_API_KEY=your-datadog-api-key
+```
+
+`dev` 和 `start` 脚本会先加载 `.env.local`，再预加载 Datadog tracer。预构建容器已经配置站点、应用名称、启用标志和预加载钩子；运行时只需提供 API 密钥：
+
+```bash
+docker run -p 3000:3000 \
+  -e DD_API_KEY=your-datadog-api-key \
+  ghcr.io/1w2w3y/gen-smith:latest
+```
+
+Agent Observability 会记录模型的 prompt/input 正文和结构化 prompt 元数据。生成的图像和音频二进制内容不会写入 span；span 仅包含输出摘要和生成指标。可在 [Datadog Agent Observability](https://app.us3.datadoghq.com/llm/applications?query=@ml_app:gen-smith) 中查看此应用的 trace。
 
 也可以挂载 `config.json` 进行高级配置：
 

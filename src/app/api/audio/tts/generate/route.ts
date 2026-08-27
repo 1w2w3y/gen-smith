@@ -85,49 +85,96 @@ export async function POST(request: NextRequest) {
 
     console.log(`[api/audio/tts/generate] Calling Azure TTS at ${url}`);
 
-    const startTime = Date.now();
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...authHeaders,
+    const hasInstructions =
+      typeof instructions === "string" && instructions.length > 0;
+    const inputData = [
+      ...(hasInstructions
+        ? [{ role: "system", content: instructions as string }]
+        : []),
+      { role: "user", content: input },
+    ];
+    const promptTemplate = [
+      ...(hasInstructions
+        ? [{ role: "system", content: "{{instructions}}" }]
+        : []),
+      { role: "user", content: "{{input}}" },
+    ];
+    const promptVariables = {
+      input,
+      ...(hasInstructions ? { instructions: instructions as string } : {}),
+    };
+
+    const { traceModelCall } = await import("@/lib/datadog");
+    return await traceModelCall(
+      {
+        operationName: "azure-openai.audio.speech",
+        modelName: modelConfig.deploymentName,
+        modelProvider: "azure_openai",
+        inputData,
+        prompt: {
+          id: "tts-speech-generation",
+          template: promptTemplate,
+          variables: promptVariables,
+        },
+        metadata: {
+          voice,
+          responseFormat,
+          ...(parsedSpeed !== undefined ? { speed: parsedSpeed } : {}),
+        },
+        tags: { modelFamily: "tts", modelId },
       },
-      body: JSON.stringify(requestBody),
-    });
+      async ({ annotateOutput, markError }) => {
+        const startTime = Date.now();
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...authHeaders,
+          },
+          body: JSON.stringify(requestBody),
+        });
 
-    if (!response.ok) {
-      const errorBody = await response.json().catch(() => ({}));
-      const message =
-        errorBody?.error?.message ||
-        errorBody?.message ||
-        `TTS API returned ${response.status}`;
-      console.error("[api/audio/tts/generate] Error:", message);
-      return NextResponse.json(
-        { error: { code: "api_error", message } },
-        { status: response.status }
-      );
-    }
+        if (!response.ok) {
+          const errorBody = await response.json().catch(() => ({}));
+          const message =
+            errorBody?.error?.message ||
+            errorBody?.message ||
+            `TTS API returned ${response.status}`;
+          markError(message);
+          console.error("[api/audio/tts/generate] Error:", message);
+          return NextResponse.json(
+            { error: { code: "api_error", message } },
+            { status: response.status }
+          );
+        }
 
-    // TTS returns raw audio binary — convert to base64
-    const audioBuffer = await response.arrayBuffer();
-    const base64Audio = Buffer.from(audioBuffer).toString("base64");
-    const durationMs = Date.now() - startTime;
+        // TTS returns raw audio binary — convert to base64
+        const audioBuffer = await response.arrayBuffer();
+        const base64Audio = Buffer.from(audioBuffer).toString("base64");
+        const durationMs = Date.now() - startTime;
 
-    trackGeneration("TTSGeneration", {
-      modelId,
-      deploymentName: modelConfig.deploymentName,
-      voice,
-      speed: parsedSpeed !== undefined ? String(parsedSpeed) : "",
-      responseFormat,
-    }, {
-      durationMs,
-      inputLength: input.length,
-    });
+        annotateOutput(
+          `Generated ${responseFormat} audio`,
+          { audioBytes: audioBuffer.byteLength }
+        );
 
-    return NextResponse.json({
-      audio: base64Audio,
-      format: responseFormat,
-    });
+        trackGeneration("TTSGeneration", {
+          modelId,
+          deploymentName: modelConfig.deploymentName,
+          voice,
+          speed: parsedSpeed !== undefined ? String(parsedSpeed) : "",
+          responseFormat,
+        }, {
+          durationMs,
+          inputLength: input.length,
+        });
+
+        return NextResponse.json({
+          audio: base64Audio,
+          format: responseFormat,
+        });
+      }
+    );
   } catch (error: unknown) {
     console.error("[api/audio/tts/generate] Error:", error);
 

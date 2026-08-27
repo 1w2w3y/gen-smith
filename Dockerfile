@@ -18,6 +18,11 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
+ENV DD_LLMOBS_ENABLED=true
+ENV DD_LLMOBS_AGENTLESS_ENABLED=true
+ENV DD_LLMOBS_ML_APP=gen-smith
+ENV DD_SITE=us3.datadoghq.com
+ENV NODE_OPTIONS="--import dd-trace/initialize.mjs"
 
 # --- Model configuration via environment variables ---
 # Set *_ENDPOINT to enable a model family. Only enabled families appear in the UI.

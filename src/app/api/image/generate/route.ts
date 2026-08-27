@@ -184,43 +184,77 @@ export async function POST(request: NextRequest) {
 
     console.log(`[api/image/generate] Calling Azure OpenAI at ${baseURL} with deployment ${modelConfig.deploymentName}`);
 
-    const startTime = Date.now();
-    const result = await client.images.generate(
-      params as unknown as OpenAI.Images.ImageGenerateParamsNonStreaming
+    const { extractUsageMetrics, traceModelCall } = await import("@/lib/datadog");
+    return await traceModelCall(
+      {
+        operationName: "azure-openai.images.generate",
+        modelName: modelConfig.deploymentName,
+        modelProvider: "azure_openai",
+        inputData: [{ role: "user", content: prompt }],
+        prompt: {
+          id: "gpt-image-generation",
+          template: "{{prompt}}",
+          variables: { prompt },
+        },
+        metadata: {
+          size,
+          quality,
+          outputFormat,
+          background,
+          moderation,
+          imageCount,
+          ...(outputCompression !== undefined ? { outputCompression } : {}),
+        },
+        tags: { modelFamily: "gpt-image", modelId },
+      },
+      async ({ annotateOutput, markError }) => {
+        const startTime = Date.now();
+        const result = await client.images.generate(
+          params as unknown as OpenAI.Images.ImageGenerateParamsNonStreaming
+        );
+        const durationMs = Date.now() - startTime;
+
+        if (!result.data || result.data.length === 0) {
+          markError("No images returned from API");
+          return NextResponse.json(
+            { error: { code: "empty_response", message: "No images returned from API" } },
+            { status: 500 }
+          );
+        }
+
+        const usage =
+          (result as unknown as Record<string, unknown>).usage ?? null;
+        annotateOutput(
+          `Generated ${result.data.length} image(s)`,
+          {
+            ...extractUsageMetrics(usage),
+            imageCount: result.data.length,
+          }
+        );
+
+        trackGeneration("ImageGeneration", {
+          modelId,
+          deploymentName: modelConfig.deploymentName,
+          size,
+          quality,
+          outputFormat,
+          background,
+          moderation,
+          imageCount: String(result.data.length),
+        }, {
+          durationMs,
+          promptLength: prompt.length,
+          imageCount: result.data.length,
+        });
+
+        const images = result.data.map((img, index) => ({
+          b64_json: img.b64_json ?? "",
+          index,
+        }));
+
+        return NextResponse.json({ images, usage });
+      }
     );
-    const durationMs = Date.now() - startTime;
-
-    if (!result.data || result.data.length === 0) {
-      return NextResponse.json(
-        { error: { code: "empty_response", message: "No images returned from API" } },
-        { status: 500 }
-      );
-    }
-
-    trackGeneration("ImageGeneration", {
-      modelId,
-      deploymentName: modelConfig.deploymentName,
-      size,
-      quality,
-      outputFormat,
-      background,
-      moderation,
-      imageCount: String(result.data.length),
-    }, {
-      durationMs,
-      promptLength: prompt.length,
-      imageCount: result.data.length,
-    });
-
-    const images = result.data.map((img, index) => ({
-      b64_json: img.b64_json ?? "",
-      index,
-    }));
-
-    return NextResponse.json({
-      images,
-      usage: (result as unknown as Record<string, unknown>).usage ?? null,
-    });
   } catch (error: unknown) {
     console.error("[api/image/generate] Error:", error);
 

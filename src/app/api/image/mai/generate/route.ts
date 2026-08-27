@@ -75,60 +75,88 @@ export async function POST(request: NextRequest) {
 
     console.log(`[api/image/mai/generate] Calling MAI-Image-2 at ${url}`);
 
-    const startTime = Date.now();
-    const response = await fetch(url, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(requestBody),
-    });
+    const { extractUsageMetrics, traceModelCall } = await import("@/lib/datadog");
+    return await traceModelCall(
+      {
+        operationName: "azure-ai-foundry.mai.generate",
+        modelName: modelConfig.deploymentName,
+        modelProvider: "azure-ai-foundry",
+        inputData: [{ role: "user", content: prompt }],
+        prompt: {
+          id: "mai-image-generation",
+          template: "{{prompt}}",
+          variables: { prompt },
+        },
+        metadata: { width, height },
+        tags: { modelFamily: "mai-image", modelId },
+      },
+      async ({ annotateOutput, markError }) => {
+        const startTime = Date.now();
+        const response = await fetch(url, {
+          method: "POST",
+          headers,
+          body: JSON.stringify(requestBody),
+        });
 
-    if (!response.ok) {
-      const errorBody = await response.json().catch(() => ({}));
-      const message =
-        errorBody?.error?.message ||
-        errorBody?.message ||
-        `MAI Image API returned ${response.status}`;
-      console.error("[api/image/mai/generate] Error:", message);
-      return NextResponse.json(
-        { error: { code: "api_error", message } },
-        { status: response.status }
-      );
-    }
+        if (!response.ok) {
+          const errorBody = await response.json().catch(() => ({}));
+          const message =
+            errorBody?.error?.message ||
+            errorBody?.message ||
+            `MAI Image API returned ${response.status}`;
+          markError(message);
+          console.error("[api/image/mai/generate] Error:", message);
+          return NextResponse.json(
+            { error: { code: "api_error", message } },
+            { status: response.status }
+          );
+        }
 
-    const result = await response.json();
-    const durationMs = Date.now() - startTime;
+        const result = await response.json();
+        const durationMs = Date.now() - startTime;
 
-    if (!result.data || result.data.length === 0) {
-      return NextResponse.json(
-        { error: { code: "empty_response", message: "No images returned from API" } },
-        { status: 500 }
-      );
-    }
+        if (!result.data || result.data.length === 0) {
+          markError("No images returned from API");
+          return NextResponse.json(
+            { error: { code: "empty_response", message: "No images returned from API" } },
+            { status: 500 }
+          );
+        }
 
-    trackGeneration("MaiImageGeneration", {
-      modelId,
-      deploymentName: modelConfig.deploymentName,
-      width: String(width),
-      height: String(height),
-      imageCount: String(result.data.length),
-    }, {
-      durationMs,
-      promptLength: prompt.length,
-      imageCount: result.data.length,
-    });
+        annotateOutput(
+          `Generated ${result.data.length} image(s)`,
+          {
+            ...extractUsageMetrics(result.usage),
+            imageCount: result.data.length,
+          }
+        );
 
-    const images = result.data.map(
-      (img: { b64_json?: string }, index: number) => ({
-        b64_json: img.b64_json ?? "",
-        index,
-        format: detectBase64ImageFormat(img.b64_json ?? ""),
-      })
+        trackGeneration("MaiImageGeneration", {
+          modelId,
+          deploymentName: modelConfig.deploymentName,
+          width: String(width),
+          height: String(height),
+          imageCount: String(result.data.length),
+        }, {
+          durationMs,
+          promptLength: prompt.length,
+          imageCount: result.data.length,
+        });
+
+        const images = result.data.map(
+          (img: { b64_json?: string }, index: number) => ({
+            b64_json: img.b64_json ?? "",
+            index,
+            format: detectBase64ImageFormat(img.b64_json ?? ""),
+          })
+        );
+
+        return NextResponse.json({
+          images,
+          usage: result.usage ?? null,
+        });
+      }
     );
-
-    return NextResponse.json({
-      images,
-      usage: result.usage ?? null,
-    });
   } catch (error: unknown) {
     console.error("[api/image/mai/generate] Error:", error);
 

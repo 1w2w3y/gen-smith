@@ -49,7 +49,7 @@ A lightweight playground for generative AI models — connect to Azure AI Foundr
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) 20+
+- [Node.js](https://nodejs.org/) 22+
 - npm (included with Node.js)
 - An Azure AI Foundry resource with one or more deployed models
 
@@ -164,7 +164,29 @@ Each model family is configured with a `GEN_SMITH_<FAMILY>_` prefix. Set the `_E
 
 Deployment entries support `id:deploymentName` syntax when the model ID differs from the Azure deployment name (e.g., `FLUX.2-pro:flux-2-pro`).
 
-Telemetry is off by default. To enable Application Insights, set `APPLICATIONINSIGHTS_CONNECTION_STRING` for server events and `NEXT_PUBLIC_APPLICATIONINSIGHTS_CONNECTION_STRING` for browser events; prompt and input text are not sent in telemetry.
+Application Insights telemetry is off by default. To enable it, set `APPLICATIONINSIGHTS_CONNECTION_STRING` for server events and `NEXT_PUBLIC_APPLICATIONINSIGHTS_CONNECTION_STRING` for browser events; prompt and input text are not sent to Application Insights.
+
+### Datadog Agent Observability
+
+The application is instrumented with Datadog Agent Observability for all GPT Image, MAI, FLUX, and TTS model calls. Copy the entries from `.env.example` into `.env.local`, replace the placeholder with your Datadog API key, and start the application normally:
+
+```dotenv
+DD_LLMOBS_ENABLED=true
+DD_LLMOBS_AGENTLESS_ENABLED=true
+DD_LLMOBS_ML_APP=gen-smith
+DD_SITE=us3.datadoghq.com
+DD_API_KEY=your-datadog-api-key
+```
+
+The `dev` and `start` scripts load `.env.local` before preloading the Datadog tracer. For the pre-built container, the site, application name, enablement flags, and preload hook are already configured. Supply the API key at runtime:
+
+```bash
+docker run -p 3000:3000 \
+  -e DD_API_KEY=your-datadog-api-key \
+  ghcr.io/1w2w3y/gen-smith:latest
+```
+
+Agent Observability records model prompt/input text and structured prompt metadata. Generated image and audio binary payloads are excluded from spans; the spans contain output summaries and generation metrics instead. View traces for this application in [Datadog Agent Observability](https://app.us3.datadoghq.com/llm/applications?query=@ml_app:gen-smith).
 
 Alternatively, mount a `config.json` for advanced configuration:
 
