@@ -50,6 +50,10 @@ export async function POST(request: NextRequest) {
       return badRequest(`Invalid responseFormat. Expected one of: ${TTS_FORMATS.join(", ")}`);
     }
 
+    if (instructions !== undefined && typeof instructions !== "string") {
+      return badRequest("instructions must be a string");
+    }
+
     let parsedSpeed: number | undefined;
     if (speed !== undefined) {
       if (typeof speed !== "number" || !Number.isFinite(speed) || speed < 0.25 || speed > 4.0) {
@@ -86,10 +90,10 @@ export async function POST(request: NextRequest) {
     console.log(`[api/audio/tts/generate] Calling Azure TTS at ${url}`);
 
     const hasInstructions =
-      typeof instructions === "string" && instructions.length > 0;
+      instructions !== undefined && instructions.length > 0;
     const inputData = [
       ...(hasInstructions
-        ? [{ role: "system", content: instructions as string }]
+        ? [{ role: "system", content: instructions }]
         : []),
       { role: "user", content: input },
     ];
@@ -101,7 +105,7 @@ export async function POST(request: NextRequest) {
     ];
     const promptVariables = {
       input,
-      ...(hasInstructions ? { instructions: instructions as string } : {}),
+      ...(hasInstructions ? { instructions } : {}),
     };
 
     const { traceModelCall } = await import("@/lib/datadog");

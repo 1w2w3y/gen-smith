@@ -278,6 +278,29 @@ describe("POST /api/audio/tts/generate", () => {
     expect(data.error.code).toBe("bad_request");
   });
 
+  it("returns 400 when instructions is not a string", async () => {
+    const { POST } = await import("@/app/api/audio/tts/generate/route");
+
+    const request = new Request("http://localhost/api/audio/tts/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        modelId: "gpt-4o-mini-tts",
+        input: "Hello world",
+        instructions: { style: "cheerful" },
+      }),
+    });
+
+    const response = await POST(request as never);
+    const data = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(data.error).toEqual({
+      code: "bad_request",
+      message: "instructions must be a string",
+    });
+  });
+
   it("returns 400 for an unknown responseFormat", async () => {
     const { POST } = await import("@/app/api/audio/tts/generate/route");
 
