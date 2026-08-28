@@ -1,17 +1,14 @@
 import type { NextConfig } from "next";
+import { datadogTracingIncludes } from "./scripts/datadog-tracing-includes";
 
 const nextConfig: NextConfig = {
   output: "standalone",
   serverExternalPackages: ["applicationinsights", "dd-trace", "openai"],
+  // dd-trace is loaded by the NODE_OPTIONS preload, which the file tracer
+  // cannot see. Include its whole dependency graph or the standalone server
+  // crashes before Next starts.
   outputFileTracingIncludes: {
-    "/*": [
-      "./node_modules/dd-trace/**/*",
-      "./node_modules/@datadog/**/*",
-      "./node_modules/dc-polyfill/**/*",
-      "./node_modules/import-in-the-middle/**/*",
-      "./node_modules/module-details-from-path/**/*",
-      "./node_modules/opentracing/**/*",
-    ],
+    "/*": datadogTracingIncludes(),
   },
 };
 

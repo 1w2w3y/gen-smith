@@ -21,4 +21,31 @@ jobs:
       - run: npm ci
       - run: cp config.example.json config.json
       - run: npm run build
+
+      # `next build` leaves the standalone server inside the project, where Node
+      # resolves anything the file tracer missed from the parent node_modules.
+      # Copy it out and boot it with the image's dd-trace preload, so a package
+      # missing from the trace fails here instead of crash-looping in a cluster.
+      - name: Smoke test the standalone server
+        run: |
+          cp -r .next/standalone "$RUNNER_TEMP/standalone"
+          cp -r .next/static "$RUNNER_TEMP/standalone/.next/static"
+          cd "$RUNNER_TEMP/standalone"
+          NODE_ENV=production PORT=3000 HOSTNAME=127.0.0.1 \
+            NODE_OPTIONS="--import dd-trace/initialize.mjs" \
+            node server.js > server.log 2>&1 &
+          server_pid=$!
+          for _ in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/ || true)
+            [ "$code" = "200" ] && break
+            kill -0 "$server_pid" 2>/dev/null || break
+            sleep 1
+          done
+          cat server.log
+          kill "$server_pid" 2>/dev/null || true
+          if [ "$code" != "200" ]; then
+            echo "::error::standalone server did not serve HTTP 200 (last status: ${code:-none})"
+            exit 1
+          fi
+
       - run: npm test
