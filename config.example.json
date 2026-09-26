@@ -5,6 +5,30 @@
       "displayName": "GPT Image",
       "models": [
         {
+          "id": "gpt-image-2.5-flare",
+          "displayName": "GPT Image 2.5 Flare",
+          "endpoint": "https://<resource>.openai.azure.com",
+          "deploymentName": "gpt-image-2.5-flare",
+          "apiVersion": "2024-10-21",
+          "flexibleSize": true,
+          "auth": {
+            "type": "apiKey",
+            "apiKey": "your-api-key-here"
+          }
+        },
+        {
+          "id": "gpt-image-2.5-sunburst",
+          "displayName": "GPT Image 2.5 Sunburst",
+          "endpoint": "https://<resource>.openai.azure.com",
+          "deploymentName": "gpt-image-2.5-sunburst",
+          "apiVersion": "2024-10-21",
+          "flexibleSize": true,
+          "auth": {
+            "type": "apiKey",
+            "apiKey": "your-api-key-here"
+          }
+        },
+        {
           "id": "gpt-image-2",
           "displayName": "GPT Image 2",
           "endpoint": "https://<resource>.openai.azure.com",

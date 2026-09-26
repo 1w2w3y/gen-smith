@@ -31,7 +31,7 @@ When opening or testing the local app in a browser, use Chrome through the Codex
 ## Project Structure
 
 - `src/app/` — Next.js pages and API routes
-  - `image/gpt/` — GPT Image playground (gpt-image-2, gpt-image-1.5, gpt-image-1, gpt-image-1-mini)
+  - `image/gpt/` — GPT Image playground (gpt-image-2.5-flare, gpt-image-2.5-sunburst, gpt-image-2, gpt-image-1.5, gpt-image-1, gpt-image-1-mini)
   - `image/flux/` — FLUX Image playground (FLUX.2-pro, FLUX.2-flex)
   - `audio/tts/` — TTS playground (gpt-4o-mini-tts)
   - `api/image/generate/` — GPT Image API route (OpenAI SDK)
