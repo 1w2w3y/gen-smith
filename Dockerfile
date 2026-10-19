@@ -30,7 +30,7 @@ ENV NODE_OPTIONS="--import dd-trace/initialize.mjs"
 # GPT Image (API key auth):
 #   GEN_SMITH_GPT_IMAGE_ENDPOINT    - Azure OpenAI endpoint
 #   GEN_SMITH_GPT_IMAGE_API_KEY     - API key
-#   GEN_SMITH_GPT_IMAGE_DEPLOYMENTS - Comma-separated deployment names (default: gpt-image-1)
+#   GEN_SMITH_GPT_IMAGE_DEPLOYMENTS - Comma-separated deployment names (default: gpt-image-2)
 #   GEN_SMITH_GPT_IMAGE_API_VERSION - API version (default: 2024-10-21)
 #
 # FLUX Image:
