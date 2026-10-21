@@ -1,18 +1,18 @@
 # Stage 1: Install dependencies
-FROM node:22-slim AS deps
+FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
 # Stage 2: Build the application
-FROM node:22-slim AS build
+FROM node:22-alpine AS build
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
 # Stage 3: Production image
-FROM node:22-slim AS runner
+FROM node:22-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -52,8 +52,15 @@ ENV NODE_OPTIONS="--import dd-trace/initialize.mjs"
 # Alternatively, mount a config.json at /app/config.json for advanced config.
 # If both exist for the same family, config.json takes precedence.
 
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+# Patch OS packages, and drop the npm/npx/corepack/yarn toolchains bundled with
+# the base image: the app runs with plain `node`, and their vendored deps are
+# the bulk of the image's library CVEs.
+RUN apk upgrade --no-cache && \
+    rm -rf /usr/local/lib/node_modules /usr/local/bin/npm /usr/local/bin/npx \
+           /usr/local/bin/corepack /usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-*
+
+RUN addgroup -S -g 1001 nodejs && \
+    adduser -S -u 1001 -G nodejs nextjs
 
 # Copy the standalone output
 COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
