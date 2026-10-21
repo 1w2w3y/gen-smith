@@ -3,6 +3,10 @@ name: Build and Push Docker Image
 on:
   push:
     branches: [main]
+  schedule:
+    # Weekly rebuild so the image picks up base-image and OS security patches
+    # even when the code hasn't changed.
+    - cron: "17 3 * * 1"
   workflow_dispatch:
 
 env:
@@ -44,6 +48,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          pull: true
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
