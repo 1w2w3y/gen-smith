@@ -1,19 +1,40 @@
 # Stage 1: Install dependencies
-FROM node:22-alpine AS deps
+FROM node:24-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
 # Stage 2: Build the application
-FROM node:22-alpine AS build
+FROM node:24-alpine AS build
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
 # Stage 3: Production image
-FROM node:22-alpine AS runner
+FROM node:24-alpine AS runner
 WORKDIR /app
+
+# Refuse to build on a Node.js older than the October 2026 security release
+# (24.22.1): it fixes the bundled-Brotli RCE (CVE-2026-111497) and blocks the
+# compromised eMudhra intermediates. Node 24 also bundles Brotli 1.2.0, where
+# Node 22 is still on 1.1.0 (CVE-2025-6176).
+RUN node -e 'const [a, b, c] = process.versions.node.split(".").map(Number); \
+    if (a * 1e6 + b * 1e3 + c < 24022001) { \
+      console.error("Node " + process.version + " is older than 24.22.1"); process.exit(1); }'
+
+# Patch OS packages, drop eMudhra (emSign) roots from the system CA bundle, and
+# drop the npm/npx/corepack/yarn toolchains bundled with the base image: the
+# app runs with plain `node`, and their vendored deps are the bulk of the
+# image's library CVEs. The app only talks to Azure and Datadog, neither of
+# which chains to eMudhra.
+RUN apk upgrade --no-cache && \
+    node -e 'const fs = require("fs"), { X509Certificate } = require("crypto"); \
+      const f = "/etc/ssl/certs/ca-certificates.crt"; \
+      const pems = fs.readFileSync(f, "utf8").match(/-----BEGIN CERTIFICATE-----[^-]+-----END CERTIFICATE-----\n?/g); \
+      fs.writeFileSync(f, pems.filter((p) => !/eMudhra/i.test(new X509Certificate(p).subject)).join(""));' && \
+    rm -rf /usr/local/lib/node_modules /usr/local/bin/npm /usr/local/bin/npx \
+           /usr/local/bin/corepack /usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-*
 
 ENV NODE_ENV=production
 ENV PORT=3000
@@ -51,13 +72,6 @@ ENV NODE_OPTIONS="--import dd-trace/initialize.mjs"
 #
 # Alternatively, mount a config.json at /app/config.json for advanced config.
 # If both exist for the same family, config.json takes precedence.
-
-# Patch OS packages, and drop the npm/npx/corepack/yarn toolchains bundled with
-# the base image: the app runs with plain `node`, and their vendored deps are
-# the bulk of the image's library CVEs.
-RUN apk upgrade --no-cache && \
-    rm -rf /usr/local/lib/node_modules /usr/local/bin/npm /usr/local/bin/npx \
-           /usr/local/bin/corepack /usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-*
 
 RUN addgroup -S -g 1001 nodejs && \
     adduser -S -u 1001 -G nodejs nextjs
